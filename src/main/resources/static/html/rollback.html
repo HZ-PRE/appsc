@@ -1,0 +1,158 @@
+<style>
+  :root {
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --success: #f59e0b;
+    --success-hover: #d97706;
+    --border-color: #e5e7eb;
+    --bg-light: #f9fafb;
+    --text-dark: #111827;
+    --text-gray: #6b7280;
+  }
+
+  #app-container {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-container {
+    max-width: 720px;
+    width: 95%;
+    background: white;
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #top-conf {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 13px;
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 28px;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* 更多配置块 */
+  #other-conf {
+    max-height: 0;
+    overflow: hidden;
+    background: var(--bg-light);
+    padding: 0 12px;
+    border-radius: 12px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  #other-conf.show {
+    max-height: 500px;
+    padding: 12px;
+  }
+
+  #other-conf .other-conf-c {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .file-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* 执行按钮 */
+  .submit-btn {
+    background: var(--success);
+    color: white;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  .submit-btn:hover {
+    background: var(--success-hover);
+  }
+
+  .submit-btn:active {
+    transform: scale(0.98);
+  }
+
+  #result {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+</style>
+
+<div class="card-container">
+  <div id="top-conf" data-click="toggleOtherConf()">更多配置</div>
+  <h2>安装包回滚 (仅支持 apk, exe)</h2>
+
+  <form id="rollbackForm" enctype="multipart/form-data">
+    <div id="other-conf">
+      <div class="other-conf-c">
+        <input required type="text" name="host" class="input-box" placeholder="远程服务器 IP">
+        <input required type="password" name="port" class="input-box" placeholder="远程服务器端口">
+        <input required type="password" name="user" class="input-box" placeholder="远程服务器账号">
+        <input required type="password" name="privateKeyPath" class="input-box" placeholder="密钥路径">
+        <input required type="password" name="command" class="input-box" placeholder="执行的 sh 命令">
+      </div>
+    </div>
+
+    <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+      <div class="select-box">
+        <select id="app-type-name" name="appType" required>
+          <option value="">请选择应用</option>
+        </select>
+      </div>
+      <div class="select-box">
+        <select name="filename" required>
+          <option value="">请选择文件类型</option>
+          <option value="exe">exe</option>
+          <option value="apk">apk</option>
+        </select>
+      </div>
+      <div class="select-box">
+        <select id="app-type-conf" name="appTypeConf" data-change="onAppType(1,event)">
+          <option value="">请选择配置(可不选)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="file-input">
+      <textarea required id="remoteDir" name="remoteDir" placeholder="回滚的渠道, 多渠道以逗号分隔"></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn">执行</button>
+  </form>
+
+  <div id="result"></div>
+</div>

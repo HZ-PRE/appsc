@@ -1,0 +1,139 @@
+<style>
+	:root {
+		--primary: #3b82f6;
+		--primary-hover: #2563eb;
+		--border-color: #e5e7eb;
+		--bg-light: #f9fafb;
+		--text-dark: #111827;
+		--text-gray: #6b7280;
+	}
+	#selip-body {
+		max-width: 860px;
+		margin: 30px auto;
+		background: white;
+		padding: 24px;
+		border-radius: 16px;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+	}
+
+	h2 {
+		margin: 20px 0;
+		font-size: 1.4rem;
+		text-align: center;
+	}
+
+	.flex-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	select {
+		padding: 8px 12px;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		background: var(--bg-light);
+		font-size: 14px;
+	}
+
+	textarea {
+		width: 100%;
+		height: 150px;
+		font-size: 14px;
+		padding: 10px;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		background: var(--bg-light);
+		margin-top: 12px;
+		resize: vertical;
+	}
+
+	button {
+		background: var(--primary);
+		color: white;
+		border: none;
+		border-radius: 8px;
+		padding: 10px 18px;
+		cursor: pointer;
+		font-size: 14px;
+		transition: background 0.2s ease;
+	}
+
+	button:hover {
+		background: var(--primary-hover);
+	}
+
+	#apiSum {
+		font-size: 13px;
+		color: var(--text-gray);
+		margin-top: 6px;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-top: 20px;
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+	}
+
+	th,
+	td {
+		border: 1px solid var(--border-color);
+		padding: 10px;
+		text-align: center;
+		font-size: 14px;
+	}
+
+	th {
+		background-color: var(--bg-light);
+		font-weight: 600;
+	}
+
+	tbody tr:nth-child(odd) {
+		background-color: #fafafa;
+	}
+
+	tbody tr:hover {
+		background-color: #eef2ff;
+		transition: background 0.2s ease;
+	}
+</style>
+
+<div id="selip-body">
+	<div class="flex-header">
+		<div>
+			选择 IP 数据库:
+			<select data-change="myIpSelect(event)">
+				<option value="0" data-extra-info="600000">自带查询</option>
+				<option value="1" data-extra-info="60">ip.sb</option>
+				<option value="2" data-extra-info="10">baidubce.com</option>
+				<option value="3" data-extra-info="45">ip-api.com</option>
+			</select>
+		</div>
+		<button data-click="loadIpDb()">更新查询插件</button>
+	</div>
+	
+	<h2>批量 IP 归属地查询工具</h2>
+	<textarea id="ipList" placeholder="每行一个 IP 地址，例如：&#10;8.8.8.8&#10;1.1.1.1"></textarea>
+	<br>
+	<div class="opt-box"><button data-click="copyQueryIPs()">复制查询出的内容</button><button data-click="queryIPs()">开始查询</button></div>
+	<p id="apiSum">数据来源：免费接口每分钟最多查询 337 次</p>
+	<div class="table-container">
+		<table id="resultTable" style="display:none;">
+			<thead>
+				<tr>
+					<th>IP 地址</th>
+					<th>国家</th>
+					<th>城市</th>
+					<th>运营商</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+	<div id="selip-result"></div>
+</div>

@@ -1,0 +1,301 @@
+<style>
+	:root {
+		--bg: linear-gradient(180deg, #cfe9ff 0%, #f7fbff 60%);
+		--shadow: rgba(0, 0, 0, 0.12);
+		--accent: #7ecf6e;
+		--panda-white: #fff;
+		--panda-black: #0b0b0b;
+		--bamboo: #76b041;
+	}
+	#app-container * {
+		box-sizing: border-box
+	}
+	#app-container {
+		background: var(--bg);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	#app-container .card {
+		background: rgba(255, 255, 255, 0.8);
+		border-radius: 20px;
+		padding: 28px;
+		box-shadow: 0 10px 30px var(--shadow);
+		display: grid;
+		align-items: center;
+		backdrop-filter: blur(6px);
+	}
+	#app-container .stage {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		height: 320px;
+	}
+	/* panda container */
+	#app-container .panda-wrap {
+		width: 300px;
+		height: 300px;
+		position: relative
+	}
+	/* floating */
+	#app-container .panda-wrap {
+		animation: float 6s ease-in-out infinite
+	}
+	@keyframes float {
+		0% {
+			transform: translateY(0)
+		}
+		50% {
+			transform: translateY(-14px)
+		}
+		100% {
+			transform: translateY(0)
+		}
+	}
+	/* small cloud-like shadow */
+	#app-container .shadow {
+		position: absolute;
+		left: 50%;
+		bottom: 12px;
+		width: 220px;
+		height: 22px;
+		border-radius: 999px;
+		background: rgba(0, 0, 0, 0.08);
+		transform: translateX(-50%);
+		filter: blur(6px);
+		animation: shadowScale 6s ease-in-out infinite;
+	}
+	@keyframes shadowScale {
+		0% {
+			transform: translateX(-50%) scale(1)
+		}
+		50% {
+			transform: translateX(-50%) scale(0.9)
+		}
+		100% {
+			transform: translateX(-50%) scale(1)
+		}
+	}
+	/* right panel */
+	#app-container .panel {
+		padding: 18px
+	}
+	#app-container h1 {
+		margin: 0 0 10px 0;
+		font-size: 20px
+	}
+	#app-container p {
+		margin: 0 0 18px 0;
+		color: #4b5563
+	}
+	#app-container .controls {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap
+	}
+	#app-container .btn {
+		padding: 8px 12px;
+		border-radius: 10px;
+		border: none;
+		background: #fff;
+		cursor: pointer;
+		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06)
+	}
+	/* panda svg style tweaks */
+	#app-container svg {
+		width: 100%;
+		height: 100%;
+		overflow: visible
+	}
+	#app-container .eye {
+		transform-origin: 50% 50%;
+		animation: blink 6s linear infinite
+	}
+	@keyframes blink {
+		0%,
+		2%,
+		98%,
+		100% {
+			transform: scaleY(1)
+		}
+		1%,
+		1.5% {
+			transform: scaleY(0.02)
+		}
+		50% {
+			transform: scaleY(1)
+		}
+	}
+	#app-container .ear,
+	#app-container .arm-left,
+	#app-container .arm-right {
+		transform-origin: center;
+		animation: wag 6s ease-in-out infinite
+	}
+	#app-container .arm-right {
+		animation-delay: 0.4s
+	}
+	@keyframes wag {
+		0%,
+		100% {
+			transform: rotate(0deg)
+		}
+		50% {
+			transform: rotate(-8deg)
+		}
+	}
+	/* bamboo sway */
+	#app-container .bamboo {
+		transform-origin: bottom center;
+		animation: sway 3.2s ease-in-out infinite
+	}
+	@keyframes sway {
+		0%,
+		100% {
+			transform: rotate(0deg)
+		}
+		50% {
+			transform: rotate(-6deg)
+		}
+	}
+	/* cute shine */
+	.shine {
+		mix-blend-mode: screen;
+		opacity: 0.8
+	}
+	/* responsiveness */
+	@media (max-width:900px) {
+		.card {
+			grid-template-columns: 1fr;
+			grid-auto-rows: auto
+		}
+		.panel {
+			order: 2
+		}
+		.stage {
+			order: 1
+		}
+	}
+	/* footer */
+	.credit {
+		font-size: 12px;
+		color: #6b7280;
+		margin-top: 12px
+	}
+</style>
+<div class="card">
+	<div class="stage">
+		<div class="panda-wrap" id="pandaWrap">
+			<!-- SVG panda -->
+			<svg viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cute panda">
+				<defs>
+					<linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+						<stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+						<stop offset="100%" stop-color="#f0f6ff" stop-opacity="1" />
+					</linearGradient>
+					<filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+						<feGaussianBlur stdDeviation="3" result="b" />
+						<feBlend in="SourceGraphic" in2="b" mode="normal" />
+					</filter>
+				</defs>
+				<!-- background circle -->
+				<g transform="translate(180,160)">
+					<circle r="130" fill="url(#g1)" stroke-opacity="0.06" stroke="#000" />
+				</g>
+				<!-- bamboo on left -->
+				<g transform="translate(50,150)">
+					<rect x="-10" y="-120" width="20" height="160" rx="10" fill="var(--bamboo)" class="bamboo" />
+					<g transform="translate(0,-120)">
+						<ellipse cx="0" cy="-6" rx="22" ry="10" fill="#5fa235" opacity="0.95" />
+						<ellipse cx="0" cy="-34" rx="26" ry="12" fill="#7fc94a" opacity="0.95" />
+					</g>
+				</g>
+				<!-- panda body group -->
+				<g id="panda" transform="translate(30,20)">
+					<!-- arms -->
+					<g class="arm-left" transform="translate(60,190)">
+						<ellipse cx="0" cy="0" rx="36" ry="64" fill="var(--panda-black)" />
+					</g>
+					<g class="arm-right" transform="translate(300,190)">
+						<ellipse cx="0" cy="0" rx="36" ry="64" fill="var(--panda-black)" />
+					</g>
+					<!-- body -->
+					<g transform="translate(180,200)">
+						<ellipse rx="110" ry="90" fill="var(--panda-white)" stroke="#e8eef9" stroke-width="1" />
+						<ellipse rx="64" ry="52" fill="var(--panda-black)" transform="translate(0,20)" />
+					</g>
+					<!-- head -->
+					<g transform="translate(180,100)">
+						<circle r="84" fill="var(--panda-white)" stroke="#e6eef9" stroke-width="1" />
+						<!-- ears -->
+						<g class="ear" transform="translate(-58,-44)">
+							<ellipse rx="22" ry="26" fill="var(--panda-black)" />
+							<ellipse rx="10" ry="12" fill="#1c1c1c" opacity="0.6" transform="translate(-2,2)" />
+						</g>
+						<g class="ear" transform="translate(58,-44)">
+							<ellipse rx="22" ry="26" fill="var(--panda-black)" />
+							<ellipse rx="10" ry="12" fill="#1c1c1c" opacity="0.6" transform="translate(2,2)" />
+						</g>
+						<!-- eyes -->
+						<g transform="translate(-38,0)">
+							<ellipse rx="28" ry="36" fill="var(--panda-black)" />
+							<g class="eye" transform="translate(0, -6)">
+								<circle r="8" fill="#fff" transform="translate(-5,-2)" />
+								<circle r="5" fill="#000" transform="translate(2,2)" />
+							</g>
+						</g>
+						<g transform="translate(38,0)">
+							<ellipse rx="28" ry="36" fill="var(--panda-black)" />
+							<g class="eye" transform="translate(0, -6)">
+								<circle r="8" fill="#fff" transform="translate(-3,-2)" />
+								<circle r="5" fill="#000" transform="translate(3,2)" />
+							</g>
+						</g>
+						<!-- nose & mouth -->
+						<g transform="translate(0,18)">
+							<ellipse rx="10" ry="8" fill="#1b1b1b" />
+							<path d="M -8 16 Q 0 26 8 16" stroke="#1b1b1b" stroke-width="3" fill="none"
+								stroke-linecap="round" />
+						</g>
+						<!-- cheeks (blush) -->
+						<g transform="translate(-46,20)">
+							<ellipse rx="10" ry="6" fill="#ffd6d6" opacity="0.18" />
+						</g>
+						<g transform="translate(46,20)">
+							<ellipse rx="10" ry="6" fill="#ffd6d6" opacity="0.18" />
+						</g>
+						<!-- little bamboo in paws -->
+						<g transform="translate(140,190) scale(0.9)" id="bambooSnack">
+							<rect x="0" y="-70" width="12" height="70" rx="6" fill="#5fa235" class="bamboo" />
+							<g transform="translate(6,-64)">
+								<path d="M -24 -6 C -10 -18, 10 -18, 24 -6 C 10 -10, -10 -10, -24 -6 Z"
+									fill="#7fc94a" />
+							</g>
+						</g>
+					</g>
+					<!-- small star shine -->
+					<g transform="translate(250,40) rotate(-15)">
+						<path class="shine"
+							d="M0 -6 L1.8 -1 L6 -1 L2.5 1.3 L4 6 L0 3.6 L-4 6 L-2.5 1.3 L-6 -1 L-1.8 -1 Z"
+							fill="#fffbeb" opacity="0.9" />
+					</g>
+				</g>
+			</svg>
+			<div class="shadow"></div>
+		</div>
+	</div>
+	<div class="panel">
+		<h1>可爱小熊猫</h1>
+		<p>点击下面按钮可以：切换颜色主题、让熊猫挥手。</p>
+		<div class="controls">
+			<button class="btn" data-click="setAppConf()">导入配置</button>
+			<button class="btn" id="btnWave">让熊猫挥手</button>
+			<button class="btn" id="btnTheme">切换蓝色/粉色主题</button>
+			<button class="btn" id="btnSnack">给熊猫竹子</button>
+		</div>
+		<div class="credit">提示：能给小熊猫喂根竹子吗？ <code>亲！</code><br/>
+		<div id="version"></div>
+		</div>
+	</div>
+</div>

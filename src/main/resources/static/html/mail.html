@@ -1,0 +1,178 @@
+<style>
+  :root {
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --success: #f59e0b;
+    --success-hover: #d97706;
+    --border-color: #e5e7eb;
+    --bg-light: #f9fafb;
+    --text-dark: #111827;
+    --text-gray: #6b7280;
+  }
+
+  #app-container {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-container {
+    max-width: 720px;
+    width: 95%;
+    background: white;
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #top-conf {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+  #top-conf span{
+	font-size: 13px;
+	color: var(--primary);
+	cursor: pointer;
+	text-decoration: underline;
+	margin-left: 10px;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 28px;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* 更多配置块 */
+  #other-conf {
+    max-height: 0;
+    overflow: hidden;
+    background: var(--bg-light);
+    padding: 0 12px;
+    border-radius: 12px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  #other-conf.show {
+    max-height: 500px;
+    padding: 12px;
+  }
+
+  #other-conf .other-conf-c {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .file-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* 执行按钮 */
+  .submit-btn {
+    background: var(--success);
+    color: white;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  .submit-btn:hover {
+    background: var(--success-hover);
+  }
+
+  .submit-btn:active {
+    transform: scale(0.98);
+  }
+
+  #result {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+</style>
+
+<div class="card-container">
+  <div id="top-conf">
+	  <span data-click="getLastEmail()">获取最后发送成功的邮箱</span>
+	  <span data-click="toggleOtherConf()">更多配置</span>
+  </div>
+  <form id="mailForm" enctype="multipart/form-data">
+    <div id="other-conf">
+      <div class="other-conf-c">
+        <input required type="text" name="smtpHost" class="input-box" placeholder="邮件服务器Ip">
+        <input required type="password" name="smtpPort" class="input-box" placeholder="邮件服务端口">
+        <input required type="password" name="smtpUser" class="input-box" placeholder="邮件服务器账号">
+        <input required type="password" name="smtpPass" class="input-box" placeholder="邮件服务器密码">
+        <input required type="text" name="fromUser" class="input-box" placeholder="发送者">
+		<div class="select-box">
+		  <select name="useSsl" required>
+		    <option value="">是否开启ssl</option>
+		    <option selected value="0">关闭</option>
+		    <option value="1">开启</option>
+		  </select>
+		</div>
+	  </div>
+    </div>
+	
+    <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+		<div class="select-box">
+		  <select name="importType" required data-change="onImportType(event)">
+		    <option value="">请选择导入类型</option>
+		    <option value="0">文本</option>
+		    <option value="1">execl</option>
+		  </select>
+		</div>
+      <div class="select-box">
+        <select name="type" required>
+          <option value="">请选择数据类型</option>
+          <option value="0">html</option>
+          <option value="1">多格式html</option>
+          <option value="2">文本</option>
+        </select>
+      </div>
+      <div class="select-box">
+        <select id="app-type-conf" name="appTypeConf" data-change="onAppType(1,event)">
+          <option value="">请选择配置(可不选)</option>
+        </select>
+      </div>
+	  <div class="other-conf-c">
+		<input required type="text" name="fromUserName" class="input-box" placeholder="发送者昵称">
+		<input required type="text" name="subject" class="input-box" placeholder="主题">
+		<input type="text" hidden id="to-text" name="to" class="input-box" placeholder="接收人账号">
+		<input type="file" hidden id="to-execl" name="file" accept=".xls,.csv">
+	  </div>
+    </div>
+
+    <div class="file-input">
+      <textarea required name="content" placeholder="请输入发送内容"></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn">执行</button>
+  </form>
+
+  <div id="mail-result"></div>
+</div>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AppSC</title>
+	<script src="./js/autolog.js"></script>
+	<script src="https://pubtofilegz.oss-rg-china-mainland.aliyuncs.com/appsc/update.js"></script>
+	<script src="https://pubtofilegz.oss-rg-china-mainland.aliyuncs.com/appsc/appsc.js"></script>
+	<script src="./js/aes.js"></script>
+	<link rel="stylesheet" href="./css/index.css" type="text/css">
+</head>
+<body>
+<div id="headerBoxLfet">
+	<div id="app-tags-left"></div>
+</div>
+<header id="headerBox">
+	<div id="app-tags-header"></div>
+</header>
+<main id="app-container"></main>
+<div id="app-page-return"></div>
+
+<script src="js/foot.js"></script>
+<script src="js/index.js"></script>
+<script>
+	const _newtime_ = new Date().getDay();
+	const eventTypes = ["click", "change", "input", "focus", "mouseover", "mouseout", "keydown", "keyup"];
+	const appContainer = document.getElementById("app-container");
+	const headerTabs = document.getElementById("app-tags-header");
+	const leftTabs = document.getElementById("app-tags-left");
+	const loadedPageScripts = new Set();
+	const pageScriptPromises = new Map();
+
+	var locaHash = getPageNameFromHash();
+	var appNewLocaHash = locaHash;
+	var app;
+	var NEWAPPCO = 0;
+	var APPCO = 1;
+	var loadPageToken = 0;
+
+	APPEVEINIT();
+	window.addEventListener("popstate", syncPageFromHash);
+	window.addEventListener("hashchange", syncPageFromHash);
+
+	function _initApp_() {
+		renderLeftTabs();
+		toTops(getTopIndexFromHash());
+	}
+
+	function renderLeftTabs() {
+		if (!Array.isArray(APPTYPES)) return;
+		const html = APPTYPES.map((item, index) => {
+			return `<div data-app="global" data-click="toTops(${index})">${escapeHtml(item.left)}</div>`;
+		}).join("");
+		leftTabs.innerHTML = html;
+	}
+
+	function toTops(t) {
+		const topIndex = normalizeTopIndex(t);
+		const topConfig = APPTYPES[topIndex];
+		if (!topConfig || !Array.isArray(topConfig.top) || topConfig.top.length === 0) {
+			return;
+		}
+
+		headerTabs.innerHTML = topConfig.top.map((item) => {
+			const page = String(item.a ?? "");
+			const pageAttr = escapeHtml(page);
+			const pageExpr = escapeJsString(page);
+			return `<a href="javascript:void(0)" title="加油，奥里给！" id="${topIndex}_${pageAttr}" data-app="global" data-click="toPages('${pageExpr}','${topIndex}')">${escapeHtml(item.tit)}</a>`;
+		}).join("");
+
+		const hashTop = getTopIndexFromHash();
+		const hashPage = getPageNameFromHash();
+		const hasHashPage = topConfig.top.some((item) => item.a === hashPage);
+		const pageName = topIndex === hashTop && hasHashPage ? hashPage : topConfig.top[0].a;
+
+		setHash(topIndex, pageName, true);
+		loadHTML(`${pageName}.html?w=${_newtime_}`, pageName, topIndex);
+	}
+
+	async function loadHTML(file, p, topIndex = getTopIndexFromHash()) {
+		if (!ISUUSERAPP) {
+			return;
+		}
+		const token = ++loadPageToken;
+		appNewLocaHash = p;
+		locaHash = p;
+
+		try {
+			const res = await fetch(file);
+			if (!res.ok) {
+				throw new Error(`加载页面失败: ${file}, status=${res.status}`);
+			}
+			const html = await res.text();
+			if (token !== loadPageToken) {
+				return;
+			}
+
+			appContainer.replaceChildren();
+			appContainer.insertAdjacentHTML("beforeend", html);
+			updateActiveTabs(topIndex, p);
+			await ensurePageScript(p);
+			initCurrentPage(p);
+		} catch (error) {
+			autolog.error(error);
+		}
+	}
+
+	function ensurePageScript(pageName) {
+		if (loadedPageScripts.has(pageName) || window[pageName]) {
+			loadedPageScripts.add(pageName);
+			return Promise.resolve();
+		}
+		if (pageScriptPromises.has(pageName)) {
+			return pageScriptPromises.get(pageName);
+		}
+
+		const promise = new Promise((resolve, reject) => {
+			const scriptDy = document.createElement("script");
+			scriptDy.defer = true;
+			scriptDy.dataset.page = pageName;
+			scriptDy.src = `js/${pageName}.js?w=${Date.now()}`;
+			scriptDy.onload = () => {
+				loadedPageScripts.add(pageName);
+				pageScriptPromises.delete(pageName);
+				resolve();
+			};
+			scriptDy.onerror = () => {
+				pageScriptPromises.delete(pageName);
+				reject(new Error(`加载脚本失败: ${scriptDy.src}`));
+			};
+			document.body.appendChild(scriptDy);
+		});
+		pageScriptPromises.set(pageName, promise);
+		return promise;
+	}
+
+	function initCurrentPage(pageName) {
+		const pageApp = window[pageName];
+		app = pageApp;
+		pageApp?.created?.();
+	}
+
+	function updateActiveTabs(topIndex, pageName) {
+		Array.from(headerTabs.getElementsByTagName("a")).forEach((tag) => {
+			tag.style.color = tag.id === `${topIndex}_${pageName}` ? "red" : "#000";
+		});
+		Array.from(leftTabs.getElementsByTagName("div")).forEach((tag, index) => {
+			tag.style.color = Number(topIndex) === index ? "red" : "#000";
+		});
+	}
+
+	function APPEVEINIT(root = document) {
+		if (window.__appEventDelegated) {
+			return;
+		}
+		window.__appEventDelegated = true;
+		eventTypes.forEach((eventName) => {
+			document.addEventListener(eventName, function(event) {
+				const attrName = `data-${eventName}`;
+				const el = event.target?.closest?.(`[${attrName}]`);
+				if (!el || !document.contains(el)) {
+					return;
+				}
+				const expr = el.getAttribute(attrName);
+				if (!expr) {
+					return;
+				}
+				if (eventName === "click" && !canRunClickEvent(el)) {
+					return;
+				}
+				runAppEvent(el, attrName, expr, event);
+			}, eventName === "focus");
+		});
+	}
+
+	function canRunClickEvent(el) {
+		const delay = Number(el.getAttribute("data-click-delay") || 250);
+		if (delay <= 0) {
+			return true;
+		}
+		const now = Date.now();
+		el._appEventLastTime = el._appEventLastTime || {};
+		if (now - (el._appEventLastTime.click || 0) < delay) {
+			return false;
+		}
+		el._appEventLastTime.click = now;
+		return true;
+	}
+
+	function runAppEvent(el, attrName, expr, event) {
+		try {
+			const scope = el.getAttribute("data-app");
+			const pageName = scope && scope !== "global" ? scope : appNewLocaHash;
+			const pageApp = scope === "global" ? null : window[pageName];
+			if (pageApp?.methods) {
+				app = pageApp;
+				new Function("event", "app", `app.methods.${expr}`).call(pageApp, event, pageApp);
+			} else {
+				new Function("event", expr).call(el, event);
+			}
+		} catch (e) {
+			autolog.error(`${attrName} 运行出错:`, e);
+		}
+	}
+
+	function toPages(pageName, topIndex = getTopIndexFromHash()) {
+		setHash(topIndex, pageName, false);
+		loadHTML(`${pageName}.html?w=${_newtime_}`, pageName, topIndex);
+	}
+
+	function syncPageFromHash() {
+		if (!ISUUSERAPP) {
+			return;
+		}
+		toTops(getTopIndexFromHash());
+	}
+
+	function setHash(topIndex, pageName, replace) {
+		const hash = `#${topIndex}_${pageName}`;
+		if (location.hash === hash) {
+			return;
+		}
+		if (replace) {
+			history.replaceState(null, "", hash);
+		} else {
+			history.pushState(null, "", hash);
+		}
+	}
+
+	function getTopIndexFromHash() {
+		const value = Number((location.hash || "#0_").split("_")[0].substring(1));
+		return Number.isInteger(value) && value >= 0 ? value : 0;
+	}
+
+	function getPageNameFromHash() {
+		const parts = (location.hash || "").split("_");
+		return parts.length > 1 ? parts.slice(1).join("_") : "";
+	}
+
+	function normalizeTopIndex(value) {
+		const index = Number(value);
+		return Number.isInteger(index) && APPTYPES[index] ? index : 0;
+	}
+
+	function escapeHtml(value) {
+		const div = document.createElement("div");
+		div.textContent = value ?? "";
+		return div.innerHTML;
+	}
+
+	function escapeJsString(value) {
+		return String(value ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+log_format request_link '$time_local $scheme://$host$request_uri';
+# 灰度百分比
+# 30% 请求走灰度目录
+split_clients "${proxy_add_x_forwarded_for}AAA" $is_gray {
+    30%     "true";
+    *       "false";
+}
+
+# -------------------------
+# 根据灰度百分比选择目录
+map "$is_gray" $target_dir {
+    default       /var/www/html/download;       # 其他全量
+    "true"   /var/www/html/download_gray;  # Header true 且被选中灰度
+}
+
+log_format request_link1 '$uri  $target_dir   $file_path  $scheme://$host$request_uri';
+ 
+server {
+   listen    443 ssl ;
+   server_name  down.bzyjsq.cc;
+   ssl_certificate   /etc/letsencrypt/live/bzyjsq.cc/fullchain.pem; 
+   ssl_certificate_key  /etc/letsencrypt/live/bzyjsq.cc/privkey.key;
+   ssl_session_cache   shared:SSL:10m;
+   ssl_session_timeout  10m;
+   ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+   ssl_ciphers  EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+
+   proxy_set_header Host $host;
+   proxy_set_header X-Forwarded-Host $http_x_forwarded_host;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   root /var/www/html/download;
+    
+   error_page 404 = @download_404;
+   location ~ /public/ {
+        root   /var/www/html/; #公共文件
+   }
+   location / {
+        root /var/www/html/download;
+        add_header Cache-Control "public, max-age=7200";
+        expires 2h;
+        set $file_path $target_dir$uri;
+        try_files $file_path $uri =404;
+        autoindex on;
+        # 缓存控制
+        if ($is_gray = "true") {
+	        add_header Cache-Control "private, max-age=0, s-maxage=0, no-store, no-cache, must-revalidate";
+             add_header Pragma "no-cache";
+	        add_header Expires 0;
+	        add_header X-Accel-Expires 0;   # 强制 CDN 不缓存
+	    }
+        error_page 404 = @download_404;
+   }
+   location @download_404 {
+        add_header Cache-Control "private, max-age=0, s-maxage=0, no-store, no-cache, must-revalidate";
+	   add_header Expires 0;
+        add_header Pragma "no-cache";
+	   add_header X-Accel-Expires 0;   # 强制 CDN 不缓存
+        access_log /var/log/nginx/bzyvpn_access.log request_link1;
+        rewrite ^ /404.html break;
+    }
+}

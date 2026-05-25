@@ -1,0 +1,10 @@
+<update table="config" >
+    CREATE TABLE IF NOT EXISTS config (
+    type TEXT NOT NULL,
+    val TEXT,
+    updated_at TEXT,
+    created_at TEXT,
+    PRIMARY KEY(type, val)
+    );
+</update>
+

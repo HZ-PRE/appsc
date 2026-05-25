@@ -1,0 +1,728 @@
+<style>
+	:root {
+		--primary: #3b82f6;
+		--primary-hover: #2563eb;
+		--primary-light: #eff6ff;
+		--danger: #ef4444;
+		--danger-hover: #dc2626;
+		--success: #22c55e;
+		--border-color: #e5e7eb;
+		--bg-light: #f9fafb;
+		--text-dark: #111827;
+		--text-gray: #6b7280;
+	}
+
+	#selip-body {
+		max-width: 960px;
+		margin: 30px auto;
+		background: white;
+		padding: 24px;
+		border-radius: 16px;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+	}
+
+	h2 {
+		margin: 0 0 20px;
+		font-size: 1.4rem;
+		text-align: center;
+		color: var(--text-dark);
+	}
+
+	.top-bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+	}
+
+	.top-bar h2 {
+		margin: 0;
+		text-align: left;
+	}
+
+	.top-actions {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.search-box {
+		display: flex;
+		align-items: center;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		overflow: hidden;
+		background: var(--bg-light);
+		transition: border-color 0.2s;
+	}
+
+	.search-box:focus-within {
+		border-color: var(--primary);
+	}
+
+	.search-box input {
+		border: none;
+		outline: none;
+		padding: 9px 12px;
+		font-size: 14px;
+		width: 180px;
+		background: transparent;
+	}
+
+	.search-box input::placeholder {
+		color: #9ca3af;
+	}
+
+	.search-box button {
+		background: var(--primary);
+		color: white;
+		border: none;
+		padding: 9px 14px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		transition: background 0.2s;
+		border-radius: 0;
+	}
+
+	.search-box button:hover {
+		background: var(--primary-hover);
+	}
+
+	.btn-add {
+		background: var(--primary);
+		color: white;
+		border: none;
+		border-radius: 8px;
+		padding: 10px 20px;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: 500;
+		transition: background 0.2s ease;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.btn-add:hover {
+		background: var(--primary-hover);
+	}
+
+	.list-header, .node-item {
+		display: grid;
+		grid-template-columns: 150px 150px 100px 1fr 100px 180px;
+		align-items: center;
+		padding: 12px 20px;
+		font-size: 13px;
+	}
+
+	.list-header {
+		background: var(--bg-light);
+		border: 1px solid var(--border-color);
+		border-bottom: none;
+		border-radius: 12px 12px 0 0;
+		font-weight: 600;
+		color: var(--text-gray);
+	}
+
+	.node-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		height: calc(100vh - 280px);
+		overflow-y: auto;
+		border: 1px solid var(--border-color);
+		border-top: none;
+		border-radius: 0 0 12px 12px;
+	}
+
+	.node-list::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.node-list::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.node-list::-webkit-scrollbar-thumb {
+		background: #c7d2fe;
+		border-radius: 3px;
+	}
+
+	.node-list::-webkit-scrollbar-thumb:hover {
+		background: #a5b4fc;
+	}
+
+	.node-list.has-header .node-item:first-child {
+		border-radius: 0;
+	}
+
+	.node-list.has-header .node-item:last-child {
+		border-radius: 0 0 12px 12px;
+	}
+
+	.node-list.has-header .node-item:only-child {
+		border-radius: 0 0 12px 12px;
+	}
+
+	.node-item {
+		border: 1px solid var(--border-color);
+		border-top: none;
+		border-radius: 0;
+		margin-bottom: 0;
+		background: white;
+		transition: all 0.2s ease;
+	}
+
+	.node-item:last-child {
+		border-radius: 0 0 12px 12px;
+	}
+
+	.node-item:hover {
+		background-color: #eef2ff;
+		border-color: var(--primary);
+		box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+	}
+
+	.cell-out-ip {
+		font-weight: 600;
+		color: var(--text-dark);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.cell-in-ip {
+		color: var(--text-gray);
+		font-family: monospace;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.cell-country {
+		text-align: center;
+	}
+
+	.cell-country span {
+		background: #eff6ff;
+		color: #1e40af;
+		padding: 3px 10px;
+		border-radius: 20px;
+		font-size: 13px;
+	}
+
+	.cell-remark {
+		color: var(--text-gray);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.action-dropdown {
+		position: relative;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.btn-monitor {
+		background: transparent;
+		color: var(--primary);
+		border: 1px solid #bfdbfe;
+		border-radius: 6px;
+		padding: 4px 10px;
+		cursor: pointer;
+		font-size: 12px;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 3px;
+		margin: 0 auto;
+	}
+
+	.btn-monitor:hover {
+		background: var(--primary);
+		color: white;
+		border-color: var(--primary);
+	}
+
+	.monitor-actions {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		align-items: center;
+	}
+
+	.btn-monitor-traffic {
+		color: #0f766e;
+		border-color: #99f6e4;
+	}
+
+	.btn-monitor-traffic:hover {
+		background: #0f766e;
+		color: white;
+		border-color: #0f766e;
+	}
+
+	.action-dropdown .dropdown-toggle {
+		background: var(--primary-light);
+		color: var(--primary);
+		border: 1px solid #bfdbfe;
+		border-radius: 6px;
+		padding: 5px 14px;
+		cursor: pointer;
+		font-size: 13px;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		transition: all 0.2s;
+	}
+
+	.action-dropdown .dropdown-toggle:hover {
+		background: var(--primary);
+		color: white;
+		border-color: var(--primary);
+	}
+
+	.action-dropdown .dropdown-toggle svg {
+		transition: transform 0.2s;
+	}
+
+	.action-dropdown.open .dropdown-toggle svg {
+		transform: rotate(180deg);
+	}
+
+	.action-dropdown .dropdown-menu {
+		display: none;
+		position: absolute;
+		right: 0;
+		top: 100%;
+		margin-top: 4px;
+		background: white;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+		min-width: 300px;
+		z-index: 1000;
+		overflow: hidden;
+	}
+	.action-dropdown .dropdown-menu div{
+		display: flex;justify-content: space-around;border-bottom: 1px solid #ccc;border-top: 1px solid #ccc;
+	}
+	.action-dropdown.open .dropdown-menu {
+		display: block;
+	}
+
+	.action-dropdown .dropdown-menu button {
+		display: block;
+		width: 100%;
+		background: white;
+		border: none;
+		padding: 9px 16px;
+		text-align: left;
+		font-size: 13px;
+		color: var(--text-dark);
+		cursor: pointer;
+		transition: background 0.15s;
+		border-radius: 0;
+	}
+
+	.action-dropdown .dropdown-menu button:hover {
+		background: var(--primary-light);
+		color: var(--primary);
+	}
+
+	.action-dropdown .dropdown-menu button + button {
+		border-top: 1px solid var(--border-color);
+	}
+
+	/* 弹窗 */
+	.modal-overlay {
+		display: none;
+		position: fixed;
+		top: 0; left: 0; right: 0; bottom: 0;
+		background: rgba(0,0,0,0.4);
+		z-index: 1000;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.modal-overlay.show {
+		display: flex;
+	}
+
+	.modal-box {
+		background: white;
+		border-radius: 16px;
+		padding: 28px;
+		width: 600px;
+		max-width: 92vw;
+		max-height: 70vh;
+		overflow-y: auto;
+		box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+		animation: modalIn 0.2s ease;
+	}
+
+	.modal-box.monitor-modal-box {
+		width: min(1320px, 96vw);
+		height: min(920px, 88vh);
+		display: flex;
+		flex-direction: column;
+	}
+
+	@keyframes modalIn {
+		from { transform: translateY(-20px); opacity: 0; }
+		to { transform: translateY(0); opacity: 1; }
+	}
+
+	.modal-title-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+	}
+
+	.modal-title {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: var(--text-dark);
+		margin: 0;
+	}
+
+	.btn-refresh {
+		background: var(--bg-light);
+		color: var(--text-gray);
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		padding: 6px 14px;
+		cursor: pointer;
+		font-size: 13px;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		transition: all 0.2s;
+	}
+
+	.btn-refresh:hover {
+		background: var(--primary);
+		color: white;
+		border-color: var(--primary);
+	}
+
+	.btn-refresh.spinning svg {
+		animation: spin 0.6s linear;
+	}
+
+	@keyframes spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
+	}
+
+	.form-section {
+		margin-bottom: 18px;
+	}
+
+	.form-section-title {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--primary);
+		padding: 8px 0 6px;
+		border-bottom: 1px solid #e0e7ff;
+		margin-bottom: 12px;
+	}
+
+	.form-row {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 12px;
+	}
+
+	.form-row .form-group {
+		flex: 1;
+		margin-bottom: 0;
+	}
+
+	.form-group {
+		margin-bottom: 12px;
+	}
+
+	.form-group label {
+		display: block;
+		font-size: 13px;
+		color: var(--text-gray);
+		margin-bottom: 5px;
+		font-weight: 500;
+	}
+
+	.form-group input,
+	.form-group select,
+	.form-group textarea {
+		width: 100%;
+		padding: 9px 12px;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		font-size: 14px;
+		background: var(--bg-light);
+		box-sizing: border-box;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+
+	.form-group input:focus,
+	.form-group select:focus,
+	.form-group textarea:focus {
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+	}
+
+	.form-group input[readonly] {
+		background: #f3f4f6;
+		color: var(--text-gray);
+		cursor: default;
+	}
+
+	.modal-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
+		margin-top: 20px;
+	}
+
+	.monitor-frame-wrap {
+		flex: 1;
+		min-height: 0;
+		border: 1px solid var(--border-color);
+		border-radius: 12px;
+		overflow: hidden;
+		background: #f3f4f6;
+	}
+
+	.monitor-frame {
+		width: 100%;
+		height: 100%;
+		border: none;
+		background: white;
+	}
+
+	.btn-cancel {
+		background: var(--bg-light);
+		color: var(--text-gray);
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		padding: 9px 20px;
+		cursor: pointer;
+		font-size: 14px;
+		transition: all 0.2s;
+	}
+
+	.btn-cancel:hover {
+		background: #e5e7eb;
+	}
+
+	.btn-submit {
+		background: var(--primary);
+		color: white;
+		border: none;
+		border-radius: 8px;
+		padding: 9px 20px;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: 500;
+		transition: background 0.2s;
+	}
+
+	.btn-submit:hover {
+		background: var(--primary-hover);
+	}
+
+	/* 详情弹窗 */
+	.detail-grid {
+		display: grid;
+		grid-template-columns: 120px 1fr;
+		gap: 12px 16px;
+		font-size: 14px;
+	}
+
+	.detail-section-title {
+		grid-column: 1 / -1;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--primary);
+		padding: 8px 0 4px;
+		border-bottom: 1px solid #e0e7ff;
+		margin-top: 6px;
+	}
+
+	.detail-grid .label {
+		color: var(--text-gray);
+		font-weight: 500;
+	}
+
+	.detail-grid .value {
+		color: var(--text-dark);
+	}
+	#editModal label{
+		background-color: #fcc87d;
+	}
+</style>
+
+<div id="selip-body">
+	<div class="top-bar">
+		<h2>节点管理</h2>
+		<div class="top-actions">
+			<select class="filter-select" style="min-width: 88px" data-change="searchUse(event)" title="按使用情况筛选">
+				<option value="">全部状态</option>
+				<option value="0">未使用</option>
+				<option value="1">已使用</option>
+			</select>
+			<div class="search-box">
+				<input type="text" id="searchInput" placeholder="搜索节点ip,国家，备注等..." data-input="searchNodes()">
+				<button data-click="searchNodes()">
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="white" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+				</button>
+			</div>
+			<button class="btn-add" data-click="addNode()">
+				<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+				添加节点
+			</button>
+			<button class="btn-add" id="loadMonitorBtn" data-click="loadMonitor()" style="background:#7c3aed;">
+				<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="10" width="3" height="5" rx="1" fill="white"/><rect x="6" y="6" width="3" height="9" rx="1" fill="white"/><rect x="11" y="2" width="3" height="13" rx="1" fill="white"/></svg>
+				加载监控
+			</button>
+			<button class="btn-refresh" id="detailRefreshBtn" data-click="refreshDetail('detailRefreshBtn')">
+				<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7a5 5 0 11-2-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 1h2.5a.5.5 0 01.5.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				刷新
+			</button>
+		</div>
+	</div>
+
+	<div class="list-header">
+		<span>出口 IP</span>
+		<span>入口 IP</span>
+		<span style="text-align:center">国家/地区</span>
+		<span>备注</span>
+		<span style="text-align:center">监控</span>
+		<span style="text-align:right">操作</span>
+	</div>
+	<ul class="node-list has-header" id="nodeList"></ul>
+</div>
+
+<div class="modal-overlay" id="trafficMonitorModal">
+	<div class="modal-box monitor-modal-box">
+		<div class="modal-title-row">
+			<div class="modal-title" id="trafficMonitorTitle"></div>
+			<button class="btn-refresh" data-click="refreshTrafficMonitor()">
+				<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7a5 5 0 11-2-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 1h2.5a.5.5 0 01.5.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				刷新
+			</button>
+		</div>
+		<div class="monitor-frame-wrap">
+			<iframe id="trafficMonitorFrame" class="monitor-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+		</div>
+		<div class="modal-footer">
+			<button class="btn-cancel" data-click="closeModal('trafficMonitorModal')">关闭</button>
+		</div>
+	</div>
+</div>
+
+<!-- 添加/编辑弹窗 -->
+<div class="modal-overlay" id="editModal">
+	<div class="modal-box">
+		<div class="modal-title" id="modalTitle">添加节点</div>
+		<div class="form-section">
+			<div class="form-section-title">基本信息</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label>出口国家/地区</label>
+					<input type="text" id="app-city" list="city-list" placeholder="请选择或输入">
+					<datalist id="city-list">
+					</datalist>
+				</div>
+				<div class="form-group">
+					<label>带宽(MB)</label>
+					<input type="text" id="app-dw" placeholder="如：100Mbps">
+				</div>
+			</div>
+		</div>
+
+		<div class="form-section">
+			<div class="form-section-title">出口信息</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label>出口 IP</label>
+					<input type="text" id="app-out_ip" placeholder="如：1.2.3.4">
+				</div>
+				<div class="form-group">
+					<label>出口 SSH 端口</label>
+					<input type="text" id="app-out_ip_port" placeholder="如：22，默认为22">
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label>出口 SSH 账号</label>
+					<input type="text" id="app-out_ip_user" placeholder="如：root，默认为root">
+				</div>
+				<div class="form-group">
+					<label>出口 SSH 密码</label>
+					<input type="text" id="app-out_ip_pwd" placeholder="SSH 登录密码，默认为自带密钥">
+				</div>
+			</div>
+		</div>
+
+		<div class="form-section">
+			<div class="form-section-title">入口信息</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label>入口 IP</label>
+					<input type="text" id="app-in_ip" placeholder="如：10.0.0.1">
+				</div>
+				<div class="form-group">
+					<label>入口 SSH 端口</label>
+					<input type="text" id="app-in_ip_port" placeholder="如：22，不填则为出口SSH 端口">
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group">
+					<label>入口 SSH 账号</label>
+					<input type="text" id="app-in_ip_user" placeholder="如：root，不填则为出口SSH 账号">
+				</div>
+				<div class="form-group">
+					<label>入口 SSH 密码</label>
+					<input type="text" id="app-in_ip_pwd" placeholder="SSH 登录密码，不填则为出口SSH 密码">
+				</div>
+			</div>
+		</div>
+
+		<div class="form-section">
+			<div class="form-section-title">其他</div>
+			<div class="form-group">
+				<label>备注</label>
+				<textarea id="app-note" rows="2" placeholder="可选"></textarea>
+			</div>
+		</div>
+
+		<div class="modal-footer">
+			<button class="btn-cancel" data-click="closeModal('editModal')">取消</button>
+			<button class="btn-submit" data-click="saveNode()">保存</button>
+		</div>
+	</div>
+</div>
+
+<!-- 详情弹窗 -->
+<div class="modal-overlay" id="detailModal">
+	<div class="modal-box">
+		<div class="modal-title-row">
+			<div class="modal-title">节点详情</div>
+			<button class="btn-refresh" id="detailRefreshBtn1" data-click="refreshDetail('detailRefreshBtn1')">
+				<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7a5 5 0 11-2-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 1h2.5a.5.5 0 01.5.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				刷新
+			</button>
+		</div>
+		<div class="detail-grid" id="detailGrid"></div>
+		<div class="modal-footer">
+			<button class="btn-cancel" data-click="closeModal('detailModal')">关闭</button>
+		</div>
+	</div>
+</div>

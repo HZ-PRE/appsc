@@ -1,0 +1,190 @@
+<style>
+  :root {
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --border-color: #e5e7eb;
+    --bg-light: #f9fafb;
+    --text-dark: #111827;
+    --text-gray: #6b7280;
+  }
+
+  #app-container {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-container {
+    max-width: 720px;
+    width: 95%;
+    background: white;
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #top-conf {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 13px;
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  #top-conf span{
+    padding: 1px 10px;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 28px;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* 更多配置块 */
+  #other-conf {
+    max-height: 0;
+    overflow: hidden;
+    background: var(--bg-light);
+    padding: 0 12px;
+    border-radius: 12px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+
+  #other-conf.show {
+    max-height: 500px;
+    padding: 12px;
+  }
+
+  #other-conf .other-conf-c {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .file-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .file-input input[type="file"] {
+    display: none;
+  }
+
+  .file-input label {
+    background: var(--primary);
+    color: white;
+    padding: 10px 14px;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+  }
+
+  .file-input label:hover {
+    background: var(--primary-hover);
+  }
+
+  .file-name {
+    font-size: 13px;
+    color: var(--text-gray);
+    margin-top: 4px;
+  }
+
+  /* 上传按钮 */
+  .submit-btn {
+    background: var(--primary);
+    color: white;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  .submit-btn:hover {
+    background: var(--primary-hover);
+  }
+
+  .submit-btn:active {
+    transform: scale(0.98);
+  }
+
+  #result {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+</style>
+
+<div class="card-container">
+  <div id="top-conf"><span data-click="toggleLogs()">日志</span><span data-click="toggleOtherConf()">更多配置</span></div>
+  <h2>云上传 (支持 jpg, png, gif, webp 等)</h2>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <div id="other-conf">
+      <div class="other-conf-c">
+        <input type="text" name="privateKeyPath" class="input-box" placeholder="云链接">
+        <input required type="text" name="bucketName" class="input-box" placeholder="云的桶或分支">
+        <input required type="text" name="endpoint" class="input-box" placeholder="云的 endpoint 或仓库名">
+        <input required type="password" name="accessKeyId" class="input-box" placeholder="云 ID 或账号">
+        <input required type="password" name="accessKeySecret" class="input-box" placeholder="云密钥">
+      </div>
+    </div>
+
+    <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+      <div class="select-box">
+        <select name="appType" data-change="onAppType(0,event)" required>
+          <option value="">请选择资源类型</option>
+          <option value="aliOss">阿里云</option>
+          <option value="dashOss">泛播</option>
+          <option value="awsOss">亚马逊云</option>
+          <option value="githubOss">GitHub</option>
+        </select>
+      </div>
+      <div class="select-box">
+        <select name="appTypeConf" id="app-type-conf" data-change="onAppType(1,event)">
+          <option value="">请选择配置(可不选)</option>
+        </select>
+      </div>
+      <div>
+        <input type="text" name="remoteDir" class="input-box" list="yun-dir-list" placeholder="云目录">
+        <datalist id="yun-dir-list">
+        </datalist>
+      </div>
+    </div>
+
+    <div class="file-input">
+      <input type="file" id="file" name="appfile" required>
+      <label for="file">选择资源</label>
+      <div class="file-name" id="file-name">未选择资源</div>
+    </div>
+
+    <button type="submit" class="submit-btn">上传</button>
+  </form>
+
+  <div id="result"></div>
+</div>

@@ -1,0 +1,570 @@
+<style>
+	:root {
+		--primary: #3b82f6;
+		--primary-hover: #2563eb;
+		--primary-light: #eff6ff;
+		--danger: #ef4444;
+		--danger-hover: #dc2626;
+		--border-color: #e5e7eb;
+		--bg-light: #f9fafb;
+		--text-dark: #111827;
+		--text-gray: #6b7280;
+	}
+
+	#server-host-body {
+		max-width: 1100px;
+		margin: 30px auto;
+		background: #fff;
+		padding: 24px;
+		border-radius: 12px;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+	}
+
+	.host-toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 18px;
+	}
+
+	.host-toolbar h2 {
+		margin: 0;
+		font-size: 1.4rem;
+		color: var(--text-dark);
+	}
+
+	.host-actions {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.search-box {
+		display: flex;
+		align-items: center;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		overflow: hidden;
+		background: var(--bg-light);
+	}
+
+	.search-box:focus-within {
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.search-box input {
+		width: 220px;
+		border: 0;
+		outline: 0;
+		padding: 9px 12px;
+		background: transparent;
+		font-size: 14px;
+	}
+
+	.filter-select {
+		min-width: 112px;
+		padding: 9px 12px;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		background: var(--bg-light);
+		color: var(--text-dark);
+		font-size: 14px;
+		outline: 0;
+	}
+
+	.filter-select:focus {
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.search-box button,
+	.btn-primary,
+	.btn-secondary,
+	.btn-danger {
+		border: 0;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 14px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		transition: background 0.18s, border-color 0.18s, color 0.18s;
+	}
+
+	.search-box button {
+		align-self: stretch;
+		padding: 0 14px;
+		border-radius: 0;
+		background: var(--primary);
+		color: #fff;
+	}
+
+	.search-box button:hover,
+	.btn-primary:hover {
+		background: var(--primary-hover);
+	}
+
+	.btn-primary {
+		padding: 10px 18px;
+		background: var(--primary);
+		color: #fff;
+		font-weight: 500;
+	}
+
+	.btn-secondary {
+		padding: 9px 16px;
+		background: var(--bg-light);
+		color: var(--text-gray);
+		border: 1px solid var(--border-color);
+	}
+
+	.btn-secondary:hover {
+		background: #eef2ff;
+		color: var(--primary);
+		border-color: #bfdbfe;
+	}
+
+	.btn-danger {
+		color: var(--danger);
+	}
+
+	.btn-danger:hover {
+		background: #fef2f2 !important;
+		color: var(--danger-hover) !important;
+	}
+
+	.host-table-head,
+	.host-row {
+		display: grid;
+		grid-template-columns: minmax(170px, 1.3fr) minmax(120px, .9fr) minmax(140px, 1fr) 74px minmax(160px, 1fr) 145px 96px;
+		align-items: center;
+		column-gap: 14px;
+		padding: 12px 18px;
+		font-size: 13px;
+	}
+
+	.host-table-head {
+		background: var(--bg-light);
+		border: 1px solid var(--border-color);
+		border-bottom: 0;
+		border-radius: 12px 12px 0 0;
+		font-weight: 600;
+		color: var(--text-gray);
+	}
+
+	.host-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		height: calc(100vh - 280px);
+		min-height: 260px;
+		overflow-y: auto;
+		border: 1px solid var(--border-color);
+		border-top: 0;
+		border-radius: 0 0 12px 12px;
+	}
+
+	.host-list::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.host-list::-webkit-scrollbar-thumb {
+		background: #c7d2fe;
+		border-radius: 3px;
+	}
+
+	.host-row {
+		background: #fff;
+		border-bottom: 1px solid var(--border-color);
+	}
+
+	.host-row.is-hidden {
+		display: none;
+	}
+
+	.host-row.is-child {
+		background: #f8fafc;
+	}
+
+	.host-row.is-child .cell-domain {
+		padding-left: 18px;
+		font-weight: 500;
+	}
+
+	.host-row:hover {
+		background: #eef2ff;
+	}
+
+	.host-row:last-child {
+		border-bottom: 0;
+		border-radius: 0 0 12px 12px;
+	}
+
+	.cell-domain {
+		font-weight: 600;
+		color: var(--text-dark);
+		font-family: Consolas, Monaco, monospace;
+	}
+
+	.tree-toggle,
+	.tree-spacer {
+		display: inline-flex;
+		width: 18px;
+		margin-right: 4px;
+		color: var(--text-gray);
+		font-weight: 700;
+		justify-content: center;
+	}
+
+	.cell-muted,
+	.cell-note,
+	.cell-time {
+		color: var(--text-gray);
+	}
+
+	.cell-domain,
+	.cell-muted,
+	.cell-note,
+	.cell-time {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.empty-state {
+		padding: 44px 0;
+		text-align: center;
+		color: var(--text-gray);
+		font-size: 14px;
+	}
+
+	.action-dropdown {
+		position: relative;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.dropdown-toggle {
+		background: var(--primary-light);
+		color: var(--primary);
+		border: 1px solid #bfdbfe;
+		border-radius: 6px;
+		padding: 5px 14px;
+		cursor: pointer;
+		font-size: 13px;
+		font-weight: 500;
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	.dropdown-toggle:hover {
+		background: var(--primary);
+		color: #fff;
+		border-color: var(--primary);
+	}
+
+	.dropdown-menu {
+		display: none;
+		position: absolute;
+		right: 0;
+		top: 100%;
+		margin-top: 4px;
+		min-width: 110px;
+		background: #fff;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+		overflow: hidden;
+		z-index: 30;
+	}
+
+	.action-dropdown.open .dropdown-menu {
+		display: block;
+	}
+
+	.dropdown-menu button {
+		width: 100%;
+		background: #fff;
+		border: 0;
+		border-radius: 0;
+		padding: 9px 16px;
+		text-align: left;
+		font-size: 13px;
+		color: var(--text-dark);
+		cursor: pointer;
+	}
+
+	.dropdown-menu button:hover {
+		background: var(--primary-light);
+		color: var(--primary);
+	}
+
+	.dropdown-menu button + button {
+		border-top: 1px solid var(--border-color);
+	}
+
+	.modal-overlay {
+		display: none;
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.4);
+		z-index: 1000;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.modal-overlay.show {
+		display: flex;
+	}
+
+	.modal-box {
+		width: 620px;
+		max-width: 92vw;
+		max-height: 76vh;
+		overflow-y: auto;
+		background: #fff;
+		border-radius: 12px;
+		padding: 24px;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
+	}
+
+	.modal-title-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 18px;
+	}
+
+	.modal-title {
+		margin: 0;
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: var(--text-dark);
+	}
+
+	.form-section-title,
+	.detail-section-title {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--primary);
+		padding-bottom: 8px;
+		border-bottom: 1px solid #e0e7ff;
+		margin-bottom: 12px;
+	}
+
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+		margin-bottom: 12px;
+	}
+
+	.form-group label {
+		display: block;
+		font-size: 13px;
+		color: #fff;
+		margin-bottom: 5px;
+		font-weight: 500;
+	}
+
+	.form-group input,
+	.form-group select,
+	.form-group textarea {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 9px 12px;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		background: var(--bg-light);
+		font-size: 14px;
+		outline: 0;
+	}
+
+	.form-group input:focus,
+	.form-group select:focus,
+	.form-group textarea:focus {
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.modal-footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
+		margin-top: 20px;
+	}
+
+	.detail-grid {
+		display: grid;
+		grid-template-columns: 120px 1fr;
+		gap: 12px 16px;
+		font-size: 14px;
+	}
+
+	.detail-grid .label {
+		color: var(--text-gray);
+		font-weight: 500;
+	}
+
+	.detail-grid .value {
+		color: var(--text-dark);
+		word-break: break-all;
+	}
+
+	@media (max-width: 860px) {
+		.host-toolbar,
+		.host-actions {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.search-box input {
+			width: 100%;
+		}
+
+		.host-table-head,
+		.host-row {
+			grid-template-columns: minmax(140px, 1.2fr) minmax(120px, 1fr) 90px;
+		}
+
+		.host-table-head span:nth-child(3),
+		.host-table-head span:nth-child(4),
+		.host-table-head span:nth-child(5),
+		.host-table-head span:nth-child(6),
+		.host-row span:nth-child(3),
+		.host-row span:nth-child(4),
+		.host-row span:nth-child(5),
+		.host-row span:nth-child(6) {
+			display: none;
+		}
+
+		.form-row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<div id="server-host-body">
+	<div class="host-toolbar">
+		<h2>域名管理</h2>
+		<div class="host-actions">
+			<div class="search-box">
+				<input type="text" id="searchInput" placeholder="搜索域名、供应商、账号、备注" data-input="searchHosts()">
+				<button data-click="searchHosts()" title="搜索">
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="white" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+				</button>
+			</div>
+			<select class="filter-select" id="statusFilter" data-change="searchHosts()" title="按状态筛选">
+				<option value="">全部状态</option>
+				<option value="0">开启</option>
+				<option value="1">关闭</option>
+			</select>
+			<select class="filter-select" id="useFilter" data-change="searchHosts()" title="按使用情况筛选">
+				<option value="">全部使用情况</option>
+				<option value="0">未使用</option>
+				<option value="1">已使用</option>
+			</select>
+			<button class="btn-primary" data-click="addHost()">
+				<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+				添加
+			</button>
+			<button class="btn-secondary" data-click="loadHosts()">刷新</button>
+		</div>
+	</div>
+
+	<div class="host-table-head" id="hostTableHead">
+		<span>域名(CDN)</span>
+		<span>供应商(应用)</span>
+		<span>供应商账号</span>
+		<span>状态</span>
+		<span>备注</span>
+		<span>创建时间</span>
+		<span style="text-align:right">操作</span>
+	</div>
+	<ul class="host-list" id="hostList"></ul>
+</div>
+
+<div class="modal-overlay" id="editModal">
+	<div class="modal-box">
+		<div class="modal-title-row">
+			<div class="modal-title" id="modalTitle">添加域名</div>
+			<button class="btn-secondary" data-click="closeModal('editModal')">关闭</button>
+		</div>
+		<div class="form-section-title">基本信息</div>
+		<div class="form-row">
+			<div class="form-group">
+				<label>状态<span style="color: red">*</span></label>
+				<select id="app-status">
+					<option value="0">开启</option>
+					<option value="1">关闭</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label>应用</label>
+				<select id="app-app" data-change="changeApp(event)">
+					<option value="">请选择应用</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group">
+				<label>供应商<span style="color: red">*</span></label>
+				<select id="app-supplier" data-change="changeSupplier(event)"></select>
+			</div>
+			<div class="form-group">
+				<label>授权API</label>
+				<select id="app-supplier_id" data-change="changeSupplierId(event)"></select>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group">
+				<label>域名<span style="color: red">*</span></label>
+				<input type="text" id="app-domain" placeholder="example.com">
+			</div>
+			<div class="form-group">
+				<label>是否备案<span style="color: red">*</span></label>
+				<select id="app-beian">
+					<option value="0">未备案</option>
+					<option value="1">已备案</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group">
+				<label>供应商账号<span style="color: red">*</span></label>
+				<input type="text" id="app-supplier_account" placeholder="账号 / 邮箱">
+			</div>
+			<div class="form-group">
+				<label>加速套餐(注意CDN的流量套餐情况)<span style="color: red">*</span></label>
+				<select id="app-scope"></select>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group">
+				<label>备注<span style="color: red">*</span></label>
+				<input type="text" id="app-note" placeholder="可选">
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn-secondary" data-click="closeModal('editModal')">取消</button>
+			<button class="btn-primary" id="btn-save" data-click="saveHost()">保存</button>
+		</div>
+	</div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+	<div class="modal-box">
+		<div class="modal-title-row">
+			<div class="modal-title">域名详情</div>
+			<button class="btn-secondary" data-click="refreshDetail()">刷新</button>
+		</div>
+		<div class="detail-grid" id="detailGrid"></div>
+		<div class="modal-footer">
+			<button class="btn-secondary" data-click="closeModal('detailModal')">关闭</button>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,216 @@
+<style>
+	:root {
+		--primary: #3b82f6;
+		--primary-hover: #2563eb;
+		--success: #10b981;
+		--success-hover: #059669;
+		--border-color: #e5e7eb;
+		--bg-light: #f9fafb;
+		--text-dark: #111827;
+		--text-gray: #6b7280;
+	}
+
+	#app-container {
+		margin: 0;
+		font-family: system-ui, Arial, sans-serif;
+		color: var(--text-dark);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.card-container {
+		max-width: 860px;
+		width: 95%;
+		background: white;
+		padding: 24px;
+		border-radius: 16px;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+		position: relative;
+		animation: fadeIn 0.3s ease-in-out;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	#top-conf {
+		position: absolute;
+		right: 20px;
+		top: 20px;
+		font-size: 13px;
+		color: var(--primary);
+		cursor: pointer;
+		text-decoration: underline;
+	}
+	#top-conf span{
+		padding: 1px 10px;
+	}
+
+	h2 {
+		text-align: center;
+		margin-bottom: 20px;
+		font-size: 1.4rem;
+	}
+
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	/* 更多配置块 */
+	#other-conf {
+		display: none;
+		background: var(--bg-light);
+		padding: 12px;
+		border-radius: 12px;
+		margin-bottom: 10px;
+	}
+
+	#other-conf .other-conf-c {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	/* 文件上传 */
+	.file-input {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.file-input input[type="file"] {
+		display: none;
+	}
+
+	.file-input label {
+		background: var(--primary);
+		color: white;
+		padding: 10px 14px;
+		border-radius: 8px;
+		cursor: pointer;
+		text-align: center;
+		transition: background 0.2s ease;
+	}
+
+	.file-input label:hover {
+		background: var(--primary-hover);
+	}
+
+	.file-name {
+		font-size: 13px;
+		color: var(--text-gray);
+	}
+
+	/* 上传按钮 */
+	.submit-btn {
+		background: var(--success);
+		color: white;
+		padding: 12px;
+		font-size: 15px;
+		font-weight: 600;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: background 0.2s ease, transform 0.1s ease;
+	}
+
+	.submit-btn:hover {
+		background: var(--success-hover);
+	}
+
+	.submit-btn:active {
+		transform: scale(0.98);
+	}
+
+	/* 结果显示区 */
+	#result {
+		margin-top: 10px;
+		font-size: 14px;
+		color: var(--text-dark);
+	}
+
+	.example-links {
+		font-size: 13px;
+		color: var(--text-gray);
+		margin-top: 12px;
+		line-height: 1.6;
+	}
+
+	.example-links a {
+		color: var(--primary);
+		text-decoration: none;
+	}
+
+	.example-links a:hover {
+		text-decoration: underline;
+	}
+</style>
+
+<div class="card-container">
+	<div id="top-conf"><span data-click="instartllLogs()">日志</span><span data-click="toggleOtherConf()">更多配置</span></div>
+	<h2>安装包上传 (仅支持 apk, exe, zip)</h2>
+
+	<form id="uploadForm" enctype="multipart/form-data">
+		<div id="other-conf">
+			<div class="other-conf-c">
+				<input required type="text" name="host" class="input-box" placeholder="远程服务器 IP">
+				<input required type="password" name="port" class="input-box" placeholder="远程服务器端口">
+				<input required type="password" name="user" class="input-box" placeholder="远程服务器账号">
+				<input required type="password" name="privateKeyPath" class="input-box" placeholder="密钥路径">
+				<input required type="password" name="remoteDir" class="input-box" placeholder="目标目录">
+				<input required type="password" name="command" class="input-box" placeholder="执行的 sh 命令">
+			</div>
+		</div>
+
+		<div style="display:flex; gap: 8px; flex-wrap: wrap;">
+			<div class="select-box">
+				<select name="appReleaseType" required>
+					<option value="text">发布测试</option>
+					<option value="gray">灰度发布</option>
+					<option value="pub">全量发布</option>
+				</select>
+			</div>
+			<div class="select-box">
+				<select name="appType" id="app-type-name" required>
+					<option value="">请选择应用</option>
+				</select>
+			</div>
+
+			<div class="select-box">
+				<select id="app-type-conf" name="appTypeConf" data-change="onAppType(1,event)">
+					<option value="">请选择配置(可不选)</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="file-input">
+			<input type="file" id="file" name="appfile" accept=".apk,.exe,.zip" required
+				data-change="showFileName(event)">
+			<label for="file">选择安装包</label>
+			<div class="file-name" id="file-name">未选择安装包</div>
+		</div>
+
+		<button type="submit" class="submit-btn">上传</button>
+	</form>
+
+	<div id="result"></div>
+
+	<div class="example-links">
+		下载案例:<br>
+		<a data-click='copyDownLink("https://download.bzyvpn.net")'>download.bzyvpn.net</a><br>
+		<a data-click='copyDownLink("https://down.bzyjsq.cc")'>down.bzyjsq.cc</a><br>
+		<a data-click='copyDownLink("https://down.jimao.xyz")'>down.jimao.xyz</a><br>
+		<a data-click='copyDownLink("https://download.kuaifei.net")' target="_blank">download.kuaifei.net</a>
+	</div>
+</div>

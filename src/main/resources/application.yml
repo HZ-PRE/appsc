@@ -1,0 +1,27 @@
+server:
+  port: 17140
+  address: 127.0.0.1
+
+hc:
+  path: ${user.home}\appsc # ${user.home} 表示用户的根目录，如 C:\Users\用户名
+
+spring:
+  datasource:
+    # jdbc 连接基础配置
+    # 指定数据库文件地址,一个文件相当于一个数据库,目录必须存在,文件不存在时会自动新建;SQLite不需要配置账号与密码;
+    url: jdbc:sqlite:${hc.path}\_sc_pm.db
+    driver-class-name: org.sqlite.JDBC
+  mvc:
+    async:
+      request-timeout: 600000 # 10分钟
+app:
+  log:
+    path: ${user.home}/appsc/logs   # 日志目录
+    level: INFO                     # 日志级别，可选：SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST
+
+# 保存路径（相对路径）
+file:
+  upload:
+    dir: ${hc.path}\uploads
+scheduled:
+  enable: true
