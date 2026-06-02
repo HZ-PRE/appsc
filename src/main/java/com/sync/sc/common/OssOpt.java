@@ -11,7 +11,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Locale;
 
 import static com.sync.sc.util.BaseUtil.*;
 
@@ -117,9 +121,11 @@ public class OssOpt {
         String objectKey = normalizeObjectKey(ossUpdate.getFilename());
         String encodedKey = encodeObjectKey(objectKey);
         String url = "https://" + ossUpdate.getBucketName() + "." + ossUpdate.getEndpoint() + "/" + encodedKey;
-        String date = java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
-                .format(java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC));
         String contentType = "application/octet-stream";
+        String date = DateTimeFormatter
+                .ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US)
+                .withZone(ZoneOffset.UTC)
+                .format(Instant.now());
         String canonicalResource = "/" + ossUpdate.getBucketName() + "/" + objectKey;
         String stringToSign = "PUT\n\n" + contentType + "\n" + date + "\n" + canonicalResource;
         String signature = hmacSha1Base64(ossUpdate.getAccessKeySecret(), stringToSign);

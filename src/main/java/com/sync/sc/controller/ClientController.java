@@ -357,7 +357,7 @@ public class ClientController {
             }
             return ResponseEntity.ok(ret);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
     @GetMapping("/getAppVersion")

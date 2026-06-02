@@ -153,7 +153,7 @@ const APPTYPENAME = [
         name: "快飞",
         val: "bsm",
         host: "host_kuaifei.txt",
-        origin:"api.huiguovpn.win"
+        origin:"api.huiguovpn.win:18008"
     }, {
         name: "极捷",
         val: "jj",
