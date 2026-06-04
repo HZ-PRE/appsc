@@ -380,6 +380,11 @@ window.server_host = {
 					if (typeof fun === 'function') {
 						fun()
 					}
+					if(e.error.startsWith("此错误可忽略")){
+						autolog.success("保存成功")
+						that.closeModal('editModal');
+						that.loadHosts();
+					}
 					autolog.confirm("报错了",`${e.error}`);
 				}
 			});

@@ -1,5 +1,5 @@
 const appscApi = 'http://127.0.0.1:17140/'
-// NODEAPI = 'http://10.10.25.202:8082/'
+NODEAPI = 'http://127.0.0.1:8082/'
 
 //以下api
 async function getDownloadFile(call) {
