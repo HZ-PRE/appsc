@@ -1,6 +1,6 @@
 var NODEAPI = 'http://10.10.25.202:8082/'
 // 本次更新的版本
-const appVersion = 275;
+const appVersion = 276;
 
 // 本次更新说明
 const appVersionTxt = "域名管理自动化功能bug修复";

@@ -18,7 +18,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <spring.boot.version>3.3.0</spring.boot.version>
-        <app.package.version>2.7.5</app.package.version>
+        <app.package.version>2.7.6</app.package.version>
     </properties>
     <dependencies>
         <dependency>
@@ -133,6 +133,7 @@
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <excludeScope>provided</excludeScope>
+                            <excludeArtifactIds>spring-boot-starter,spring-boot-starter-web,spring-boot-starter-json,spring-boot-starter-undertow,spring-boot-starter-jdbc,org.eclipse.swt</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -271,7 +272,7 @@
                                 <echo message="Creating custom JRE with jlink..."/>
                                 <delete dir="${project.build.directory}/jre"/>
                                 <exec executable="jlink" failonerror="true">
-                                    <arg line="--module-path ${java.home}/jmods --add-modules java.base,java.sql,java.naming,java.desktop,java.logging,java.management,java.security.jgss,java.security.sasl,java.xml,jdk.crypto.ec,jdk.unsupported,java.net.http,jdk.charsets --output ${project.build.directory}/jre --strip-debug --compress zip-6 --no-header-files --no-man-pages"/>
+                                    <arg line="--module-path ${java.home}/jmods --add-modules java.base,java.sql,java.naming,java.desktop,java.logging,java.management,java.xml,jdk.crypto.ec,jdk.unsupported,java.net.http,jdk.charsets --output ${project.build.directory}/jre --strip-debug --compress zip-6 --no-header-files --no-man-pages"/>
                                 </exec>
                                 <delete dir="${project.build.directory}/jre/legal"/>
                                 <delete dir="${project.build.directory}/jre/man"/>
@@ -354,8 +355,6 @@
                                     <fileset dir="${project.build.directory}" includes="appsc-*-dist.zip"/>
                                 </delete>
                                 <mkdir dir="${dist.dir}"/>
-                                <mkdir dir="${dist.dir}/data"/>
-
                                 <copy todir="${dist.dir}">
                                     <fileset dir="${project.build.directory}/app-image/appsc"/>
                                 </copy>
