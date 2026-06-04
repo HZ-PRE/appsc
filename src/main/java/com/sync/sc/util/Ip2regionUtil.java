@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -33,24 +34,43 @@ public class Ip2regionUtil {
         Path userDb = Paths.get(System.getProperty("user.home"), "appsc", "data", "ip2region.xdb");
         Path appDb = Paths.get(System.getProperty("user.dir"), "data", "ip2region.xdb");
         try {
-            byte[] cBuff;
-            if (Files.exists(userDb)) {
-                cBuff = Files.readAllBytes(userDb);
-            } else if (Files.exists(appDb)) {
-                cBuff = Files.readAllBytes(appDb);
-            } else {
-                try (InputStream in = Ip2regionUtil.class.getClassLoader().getResourceAsStream("data/ip2region.xdb")) {
-                    if (in == null) {
-                        log.warning("ip2region.xdb not found");
-                        return null;
-                    }
-                    cBuff = in.readAllBytes();
-                }
+            Path dbPath = resolveDbPath(userDb, appDb);
+            if (dbPath == null) {
+                log.warning("ip2region.xdb not found");
+                return null;
             }
-            return Searcher.newWithBuffer(cBuff);
-        } catch (IOException e) {
+
+            String dbFile = dbPath.toAbsolutePath().toString();
+            try {
+                // Load only vector index into heap; data blocks are read from file on demand.
+                // This avoids OOM when ip2region.xdb is large and keeps lookup fast.
+                byte[] vectorIndex = Searcher.loadVectorIndexFromFile(dbFile);
+                return Searcher.newWithVectorIndex(dbFile, vectorIndex);
+            } catch (IOException vectorError) {
+                log.warning("failed to load ip2region vector index, fallback to file-only mode: " + vectorError.getMessage());
+                return Searcher.newWithFileOnly(dbFile);
+            }
+        } catch (Exception e) {
             log.warning("failed to load ip2region.xdb: " + e.getMessage());
             return null;
+        }
+    }
+
+    private static Path resolveDbPath(Path userDb, Path appDb) throws IOException {
+        if (Files.exists(userDb)) {
+            return userDb;
+        }
+        if (Files.exists(appDb)) {
+            return appDb;
+        }
+
+        try (InputStream in = Ip2regionUtil.class.getClassLoader().getResourceAsStream("data/ip2region.xdb")) {
+            if (in == null) {
+                return null;
+            }
+            Files.createDirectories(userDb.getParent());
+            Files.copy(in, userDb, StandardCopyOption.REPLACE_EXISTING);
+            return userDb;
         }
     }
 

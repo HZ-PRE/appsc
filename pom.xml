@@ -41,11 +41,11 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-validation</artifactId> <!-- 如果不需要校验 -->
+                    <artifactId>spring-boot-starter-validation</artifactId> <!-- validation is not needed -->
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- 添加 Undertow 依赖 -->
+        <!-- Undertow dependency -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
@@ -60,7 +60,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- 引入Spring封装的jdbc，内部默认依赖了 HikariDataSource  数据源-->
+        <!-- Spring JDBC without HikariCP -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -137,11 +137,111 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Obfuscate application classes before jpackage -->
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.6.1</version>
+                <executions>
+                    <execution>
+                        <id>obfuscate-app-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <proguardVersion>7.6.1</proguardVersion>
+                    <injar>${project.build.finalName}.jar</injar>
+                    <outjar>${project.build.finalName}-obfuscated.jar</outjar>
+                    <obfuscate>true</obfuscate>
+                    <attach>false</attach>
+                    <options>
+                        <option>-include ${project.basedir}/proguard-app.pro</option>
+                        <option>-libraryjars ${java.home}/jmods/java.base.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.desktop.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.logging.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.management.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.naming.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.net.http.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.security.jgss.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.security.sasl.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.sql.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/java.xml.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/jdk.charsets.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/jdk.crypto.ec.jmod(!**.jar;!module-info.class)</option>
+                        <option>-libraryjars ${java.home}/jmods/jdk.unsupported.jmod(!**.jar;!module-info.class)</option>
+                    </options>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.guardsquare</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>7.6.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <!-- jlink to create custom JRE -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>obfuscate-frontend-assets</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="frontend.html.dir" value="${project.build.outputDirectory}/static/html"/>
+                                <property name="frontend.js.dir" value="${project.build.outputDirectory}/static/html/js"/>
+                                <property name="frontend.css.dir" value="${project.build.outputDirectory}/static/html/css"/>
+
+                                <echo message="Obfuscating frontend JavaScript in ${frontend.js.dir}..."/>
+                                <exec executable="powershell" failonerror="true">
+                                    <arg value="-NoProfile"/>
+                                    <arg value="-ExecutionPolicy"/>
+                                    <arg value="Bypass"/>
+                                    <arg value="-Command"/>
+                                    <arg value="Get-ChildItem '${frontend.js.dir}' -Filter *.js | ForEach-Object { npx --yes terser $_.FullName --compress --mangle toplevel=false,keep_fnames=true --output $_.FullName }"/>
+                                </exec>
+
+                                <echo message="Minifying frontend HTML in ${frontend.html.dir}..."/>
+                                <exec executable="cmd" failonerror="true">
+                                    <arg value="/c"/>
+                                    <arg value="npx"/>
+                                    <arg value="--yes"/>
+                                    <arg value="html-minifier-terser"/>
+                                    <arg value="--input-dir"/>
+                                    <arg value="${frontend.html.dir}"/>
+                                    <arg value="--output-dir"/>
+                                    <arg value="${frontend.html.dir}"/>
+                                    <arg value="--file-ext"/>
+                                    <arg value="html"/>
+                                    <arg value="--collapse-whitespace"/>
+                                    <arg value="--remove-comments"/>
+                                    <arg value="--remove-redundant-attributes"/>
+                                    <arg value="--remove-script-type-attributes"/>
+                                    <arg value="--remove-style-link-type-attributes"/>
+                                    <arg value="--minify-css"/>
+                                    <arg value="true"/>
+                                    <arg value="--minify-js"/>
+                                    <arg value="false"/>
+                                </exec>
+
+                                <echo message="Minifying frontend CSS in ${frontend.css.dir}..."/>
+                                <exec executable="powershell" failonerror="true">
+                                    <arg value="-NoProfile"/>
+                                    <arg value="-ExecutionPolicy"/>
+                                    <arg value="Bypass"/>
+                                    <arg value="-Command"/>
+                                    <arg value="Get-ChildItem '${frontend.css.dir}' -Filter *.css | ForEach-Object { npx --yes --package clean-css-cli cleancss -O2 --compatibility '*' -o $_.FullName $_.FullName }"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>clean-package-output</id>
                         <phase>prepare-package</phase>
@@ -171,8 +271,11 @@
                                 <echo message="Creating custom JRE with jlink..."/>
                                 <delete dir="${project.build.directory}/jre"/>
                                 <exec executable="jlink" failonerror="true">
-                                    <arg line="--module-path ${java.home}/jmods --add-modules java.base,java.sql,java.naming,java.desktop,java.logging,java.management,java.security.jgss,java.security.sasl,java.xml,jdk.crypto.ec,jdk.unsupported,java.net.http,jdk.charsets --output ${project.build.directory}/jre --strip-debug --compress zip-9 --no-header-files --no-man-pages"/>
+                                    <arg line="--module-path ${java.home}/jmods --add-modules java.base,java.sql,java.naming,java.desktop,java.logging,java.management,java.security.jgss,java.security.sasl,java.xml,jdk.crypto.ec,jdk.unsupported,java.net.http,jdk.charsets --output ${project.build.directory}/jre --strip-debug --compress zip-6 --no-header-files --no-man-pages"/>
                                 </exec>
+                                <delete dir="${project.build.directory}/jre/legal"/>
+                                <delete dir="${project.build.directory}/jre/man"/>
+                                <delete dir="${project.build.directory}/jre/include"/>
                             </target>
                         </configuration>
                     </execution>
@@ -189,11 +292,20 @@
                                 <delete dir="${project.build.directory}/app-image"/>
                                 <mkdir dir="${jpackage.input.dir}/lib"/>
 
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                                <copy file="${project.build.directory}/${project.build.finalName}-obfuscated.jar"
                                       tofile="${jpackage.input.dir}/appsc.jar"/>
                                 <copy todir="${jpackage.input.dir}/lib">
                                     <fileset dir="${project.build.directory}/lib" includes="*.jar"/>
                                 </copy>
+                                <exec executable="powershell" failonerror="true">
+                                    <arg value="-NoProfile"/>
+                                    <arg value="-ExecutionPolicy"/>
+                                    <arg value="Bypass"/>
+                                    <arg value="-File"/>
+                                    <arg value="${project.basedir}/scripts/slim-jars.ps1"/>
+                                    <arg value="-LibDir"/>
+                                    <arg value="${jpackage.input.dir}/lib"/>
+                                </exec>
                                 <delete file="${jpackage.input.dir}/lib/sqlite-jdbc-3.48.0.0.jar"/>
                                 <zip destfile="${jpackage.input.dir}/lib/sqlite-jdbc-3.48.0.0.jar"
                                      compress="true"
@@ -209,17 +321,17 @@
                                     <arg value="--java-options"/>
                                     <arg value="-Dfile.encoding=UTF-8"/>
                                     <arg value="--java-options"/>
-                                    <arg value="-Xss512k"/>
+                                    <arg value="-Xss384k"/>
                                     <arg value="--java-options"/>
-                                    <arg value="-XX:InitialRAMPercentage=6"/>
+                                    <arg value="-Xms32m"/>
                                     <arg value="--java-options"/>
-                                    <arg value="-XX:MaxRAMPercentage=25"/>
+                                    <arg value="-Xmx512m"/>
                                     <arg value="--java-options"/>
-                                    <arg value="-XX:+UseG1GC"/>
+                                    <arg value="-XX:+UseSerialGC"/>
                                     <arg value="--java-options"/>
-                                    <arg value="-XX:+UseStringDeduplication"/>
+                                    <arg value="-XX:MaxMetaspaceSize=128m"/>
                                     <arg value="--java-options"/>
-                                    <arg value="-XX:ReservedCodeCacheSize=64m"/>
+                                    <arg value="-XX:ReservedCodeCacheSize=32m"/>
                                     <arg value="--java-options"/>
                                     <arg value="-XX:TieredStopAtLevel=1"/>
                                     <arg value="--java-options"/>
@@ -263,3 +375,5 @@
         </plugins>
     </build>
 </project>
+
+
