@@ -40,9 +40,11 @@
     public <init>(...);
 }
 
-# Keep JavaBean accessors for DTO/entity binding; class names may still be obfuscated.
+# Keep DTO/entity field names and all JavaBean-style accessors for JSON/form/JDBC binding.
+# Some setters are chain setters returning the entity type, not void, so keep any return type.
 -keepclassmembers class com.sync.sc.entity.** {
-    public void set*(...);
+    <fields>;
+    public *** set*(...);
     public *** get*();
     public boolean is*();
 }
