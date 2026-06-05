@@ -173,3 +173,27 @@ function getDomainFromURL(url) {
         return null; // 无效的URL或无法匹配的情况
     }
 }
+//获取主域名
+function getRootDomain(host = "") {
+    if (host === "") return ;
+    const specialTlds = [
+        'com.cn',
+        'net.cn',
+        'org.cn',
+        'gov.cn',
+        'co.uk',
+        'org.uk'
+    ];
+
+    for (const tld of specialTlds) {
+        if (host.endsWith('.' + tld)) {
+            const parts = host.split('.');
+            return parts.slice(-(tld.split('.').length + 1)).join('.');
+        }
+    }
+
+    const parts = host.split('.');
+    return parts.length > 2
+        ? parts.slice(-2).join('.')
+        : host;
+}

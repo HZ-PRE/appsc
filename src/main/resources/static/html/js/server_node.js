@@ -422,6 +422,7 @@ window.server_node = {
 				'<span class="label">带宽</span><span class="value">' + (this.esc(node.dw) || '-') + '</span>'+
 				'<span class="label">默认网卡</span><span class="value">' + (this.esc(node.device) || '-') + '</span>'+
 				'<span class="label">中转应用</span><span class="value">' + (this.esc(node.zz_app) || '-') + '</span>'+
+				'<span class="label">安装Xrary</span><span class="value">' + (1===node.is_xray?'是':'否') + '</span>'+
 				'<span class="label">备注</span><span class="value">' + (this.esc(node.note) || '-') + '</span>'+
 				'<span class="label">修改时间</span><span class="value">' + node.updated_at + '</span>'+
 				'<span class="label">创建时间</span><span class="value">' + node.created_at + '</span>'+

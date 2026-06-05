@@ -103,35 +103,23 @@ window.server_host = {
 			const fragment = document.createDocumentFragment();
 			const childrenByParent = this.groupChildren(hosts);
 			const parentHosts = hosts.filter((host) => this.parentId(host) === 0);
-			const shouldRenderFlat = flatMode || parentHosts.length === 0;
-
-			if (shouldRenderFlat) {
-				hosts.forEach((host) => {
-					fragment.appendChild(this.createHostRow(host, {
-						isChild: this.parentId(host) !== 0,
-						isHidden: false,
+			parentHosts.forEach((host) => {
+				const id = this.hostId(host);
+				const children = childrenByParent[id] || [];
+				let isChildShow = flatMode || (app.data.currentHost['parent_id']!==undefined && id===app.data.currentHost['parent_id']);
+				fragment.appendChild(this.createHostRow(host, {
+					isChild: false,
+					isHidden: false,
+					hasChildren: children.length > 0
+				},host));
+				children.forEach((child) => {
+					fragment.appendChild(this.createHostRow(child, {
+						isChild: true,
+						isHidden: !isChildShow,
 						hasChildren: false
 					},host));
 				});
-			} else {
-				parentHosts.forEach((host) => {
-					const id = this.hostId(host);
-					const children = childrenByParent[id] || [];
-					let isChildShow = !(app.data.currentHost['parent_id']!==undefined && id===app.data.currentHost['parent_id']);
-					fragment.appendChild(this.createHostRow(host, {
-						isChild: false,
-						isHidden: false,
-						hasChildren: children.length > 0
-					},host));
-					children.forEach((child) => {
-						fragment.appendChild(this.createHostRow(child, {
-							isChild: true,
-							isHidden: isChildShow,
-							hasChildren: false
-						},host));
-					});
-				});
-			}
+			});
 
 			ul.appendChild(fragment);
 			if (typeof APPEVEINIT === 'function') {
@@ -218,7 +206,7 @@ window.server_host = {
 				this.isUseText(host?.is_use),
 				host?.note,
 				host?.created_at
-			].some((value) => String(value || '').toLowerCase().includes(keyword));
+			].some((value) => String(value || '').toLowerCase().includes(keyword)) || (host?.parent_id===0 && [host?.domain].some((value) => String(value || '').toLowerCase().includes(getRootDomain(keyword))));
 		},
 
 		hostFilterMatches(host, statusFilter, useFilter) {
@@ -329,7 +317,7 @@ window.server_host = {
 		},
 
 		validateHost(host) {
-			if (host.parent_id>0 && (!host.domain || !host.domain.endsWith(app.data.host) || (0!==host.parent_id && !host.domain.endsWith("."+app.data.host)))) {
+			if (host.parent_id>0 && (!host.domain || !host.domain.endsWith("."+app.data.host))) {
 				autolog.warn('请正确填写域名');
 				return false;
 			}
