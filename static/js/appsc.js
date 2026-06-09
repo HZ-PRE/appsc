@@ -1,6 +1,6 @@
 var NODEAPI = 'http://10.10.25.202:8082/'
 // 本次更新的版本
-const appVersion = 278;
+const appVersion = 279;
 
 // 本次更新说明
 const appVersionTxt = "域名管理自动化功能bug修复";
@@ -8,7 +8,7 @@ const appVersionTxt = "域名管理自动化功能bug修复";
 const APPCONFSUM=10;
 
 const APPACCESSKETLIST= ['lxf','mxh','suzijie','yangzhongjie','liuyisen','gongpenglong','huangshuiping','yangjiaming','ly','jiajunhao','yangjing','yangzhicheng','hw'];
-
+const ADMINAPPACCESSKETLIST =['lxf','liuyisen']
 const COUNTRIESCN = [
     "香港","澳门","台湾","中国","美国","日本","韩国","朝鲜","俄罗斯",
     "英国","法国","德国","意大利","西班牙","葡萄牙",

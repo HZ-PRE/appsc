@@ -151,6 +151,7 @@ window.server_host = {
 			li.dataset.hostId = String(id);
 			li.dataset.parentId = String(parentId);
 			li.className = 'host-row' + (isChild ? ' is-child' : '') + (isHidden ? ' is-hidden' : '');
+			let isEdit=!host.is_self?true:AdminAppAccessKey?true:false;
 			li.innerHTML =
 				'<span data-click="' + rowClick + '" class="cell-domain" title="' + this.esc(host.domain) + '">' + domainPrefix + this.esc(host.domain) + '</span>' +
 				'<span data-click="' + rowClick + '" class="cell-muted" title="' + this.esc(this.supplierText(host.supplier)) + '">' + this.esc(this.supplierText(host.supplier)+app) + '</span>' +
@@ -163,9 +164,8 @@ window.server_host = {
 					'<div class="dropdown-menu">' +
 				(isChild?'':'<button data-click="addHost(' + id + ",'"+this.esc(parent.domain)+"',0,"+this.esc(parent.beian)+')">普通添加</button>') +
 				(isChild?'':'<button data-click="addHost(' + id + ",'"+this.esc(parent.domain)+"',1,"+this.esc(parent.beian)+')">生成式添加</button>') +
-						'<button data-click="editHost(' + id + ",'"+this.esc(parent.domain)+"',"+this.esc(parent.beian)+')">修改</button>' +
 						'<button data-click="showDetail(' + id + ')">详情</button>' +
-						'<button class="btn-danger" data-click="deleteHost(' + id + ')">删除</button>' +
+				(isEdit?'<button data-click="editHost(' + id + ",'"+this.esc(parent.domain)+"',"+this.esc(parent.beian)+')">修改</button><button class="btn-danger" data-click="deleteHost(' + id + ')">删除</button>':'') +
 					'</div>' +
 				'</span>';
 			return li;
@@ -344,11 +344,18 @@ window.server_host = {
 			return true;
 		},
 		saveHost(){
-			throttle(this.postSaveHost(),60000)
-		},
-		postSaveHost() {
 			const that = this;
 			const host = this.readForm();
+			if (1===host['is_self'] && !host['id']){
+				autolog.confirm("请核实信息",'请核实信息，确认无误后，再提交申请，后续无法修改！',
+					function (e) {
+						e.close();
+						throttle(that.postSaveHost(host),60000)
+					},true,null,{successTit:'提交申请',failTit:'再想想'});
+			}
+		},
+		postSaveHost(host) {
+			const that = this;
 			if (!this.validateHost(host)) return;
 			let fun;
 			if (1===host['is_self'] && !host['id']){

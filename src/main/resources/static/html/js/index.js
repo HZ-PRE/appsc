@@ -1,5 +1,7 @@
 let that = this;
 var app_version = "";
+var AppAccessKey ="";
+var AdminAppAccessKey =false;
 var ISUUSERAPP = false;
 var appMsgList = [];
 var appMsgAsyncs = {};
@@ -32,6 +34,8 @@ function getAppOwner() {
 		types: `appAccessKey`,
 		success: function(e) {
 			if (e && e['appAccessKey'] && APPACCESSKETLIST.includes(e['appAccessKey'])) {
+				AppAccessKey=e['appAccessKey'];
+				AdminAppAccessKey=ADMINAPPACCESSKETLIST.includes(e['appAccessKey'])
 				ISUUSERAPP = true;
 				_initApp_();
 				if ('#0_home' === location.hash){
@@ -50,6 +54,8 @@ function getAppOwner() {
 									val: appAccessKey
 								},
 								success: function() {
+									AppAccessKey=appAccessKey;
+									AdminAppAccessKey=ADMINAPPACCESSKETLIST.includes(e['appAccessKey']);
 									ISUUSERAPP = true;
 									_initApp_();
 									autolog.success("验证成功");
