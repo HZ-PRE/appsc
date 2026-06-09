@@ -352,6 +352,8 @@ window.server_host = {
 						e.close();
 						throttle(that.postSaveHost(host),60000)
 					},true,null,{successTit:'提交申请',failTit:'再想想'});
+			}else {
+				throttle(that.postSaveHost(host),60000)
 			}
 		},
 		postSaveHost(host) {

@@ -44,36 +44,36 @@ public class ScFXApp {
     private static final String EDGE_ARGS_PROPERTY = "org.eclipse.swt.browser.EdgeArgs";
     private static final String PROD_EDGE_ARGS = "--disable-logging --log-level=3 --v=0 --disable-web-security --allow-running-insecure-content --allow-file-access-from-files --disable-features=BlockInsecurePrivateNetworkRequests";
     private static final String PAGE_DIAGNOSTICS_SCRIPT = """
-//            (function () {
-//                const noop = function () {};
-//                const methods = ['debug', 'error', 'info', 'log', 'trace', 'warn'];
-//                for (const method of methods) {
-//                    try {
-//                        Object.defineProperty(console, method, {
-//                            configurable: false,
-//                            writable: false,
-//                            value: noop
-//                        });
-//                    } catch (e) {
-//                        console[method] = noop;
-//                    }
-//                }
-//                document.addEventListener('keydown', function (event) {
-//                    const key = String(event.key || '').toLowerCase();
-//                    if (event.key === 'F12'
-//                            || (event.ctrlKey && event.shiftKey && ['i', 'j', 'c'].includes(key))
-//                            || (event.ctrlKey && key === 'u')) {
-//                        event.preventDefault();
-//                        event.stopPropagation();
-//                        return false;
-//                    }
-//                }, true);
-//                document.addEventListener('contextmenu', function (event) {
-//                    event.preventDefault();
-//                    event.stopPropagation();
-//                    return false;
-//                }, true);
-//            })();
+            (function () {
+                const noop = function () {};
+                const methods = ['debug', 'error', 'info', 'log', 'trace', 'warn'];
+                for (const method of methods) {
+                    try {
+                        Object.defineProperty(console, method, {
+                            configurable: false,
+                            writable: false,
+                            value: noop
+                        });
+                    } catch (e) {
+                        console[method] = noop;
+                    }
+                }
+                document.addEventListener('keydown', function (event) {
+                    const key = String(event.key || '').toLowerCase();
+                    if (event.key === 'F12'
+                            || (event.ctrlKey && event.shiftKey && ['i', 'j', 'c'].includes(key))
+                            || (event.ctrlKey && key === 'u')) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return false;
+                    }
+                }, true);
+                document.addEventListener('contextmenu', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }, true);
+            })();
             """;
     private static final Logger logger = Logger.getLogger(ScFXApp.class.getName());
 

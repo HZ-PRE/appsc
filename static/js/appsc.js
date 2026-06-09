@@ -1,6 +1,6 @@
 var NODEAPI = 'http://10.10.25.202:8082/'
 // 本次更新的版本
-const appVersion = 279;
+const appVersion = 280;
 
 // 本次更新说明
 const appVersionTxt = "域名管理自动化功能bug修复";
@@ -83,7 +83,7 @@ const APPTYPENAME = [
         name: "太子",
         val: "tz",
         host: "hosttaizi.txt",
-        origin:"tz.tztoym.com"
+        origin:"tz.tztoym.com:18002"
     }, {
         name: "八爪鱼",
         val: "bzy",
