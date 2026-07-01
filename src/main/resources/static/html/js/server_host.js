@@ -1,5 +1,6 @@
 window.server_host = {
 	data: {
+		win:null,
 		list: [],
 		filteredList: [],
 		currentHost: {},
@@ -162,7 +163,7 @@ window.server_host = {
 				'<span class="action-dropdown" id="'+`action-dropdown${id}`+'">' +
 					'<button class="dropdown-toggle" data-click="toggleDropdown(event)">操作 <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>' +
 					'<div class="dropdown-menu">' +
-				(isChild?'':'<button data-click="addHost(' + id + ",'"+this.esc(parent.domain)+"',0,"+this.esc(parent.beian)+')">普通添加</button>') +
+				(isChild?'<button data-click="getHostDns(' + id + ')">dns解析</button>':'<button data-click="addHost(' + id + ",'"+this.esc(parent.domain)+"',0,"+this.esc(parent.beian)+')">普通添加</button>') +
 				(isChild?'':'<button data-click="addHost(' + id + ",'"+this.esc(parent.domain)+"',1,"+this.esc(parent.beian)+')">生成式添加</button>') +
 						'<button data-click="showDetail(' + id + ')">详情</button>' +
 				(isEdit?'<button data-click="editHost(' + id + ",'"+this.esc(parent.domain)+"',"+this.esc(parent.beian)+')">修改</button><button class="btn-danger" data-click="deleteHost(' + id + ')">删除</button>':'') +
@@ -409,7 +410,18 @@ window.server_host = {
 			this.renderDetail(host);
 			this.openModal('detailModal');
 		},
-
+		getHostDns(id) {
+			const host = this.findHost(id);
+			if (!host) return;
+			app.data.win=window.open(`https://site.ip138.com/${host.domain}/`)
+			autolog.confirm(`${host.domain}域名dns解析`,
+				`已打开新窗口`,
+				function (e){
+					app.data.win.close();
+					e.close();
+				},null,null,{successTit:'关闭'}
+			)
+		},
 		renderDetail(host) {
 			const grid = document.getElementById('detailGrid');
 			const parent = this.findHost(this.parentId(host));

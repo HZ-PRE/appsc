@@ -1,9 +1,9 @@
 var NODEAPI = 'http://10.10.25.202:8082/'
 // 本次更新的版本
-const appVersion = 280;
+const appVersion = 281;
 
 // 本次更新说明
-const appVersionTxt = "域名管理自动化功能bug修复";
+const appVersionTxt = "域名和节点检测功能添加";
 
 const APPCONFSUM=10;
 
@@ -118,7 +118,7 @@ const APPTYPENAME = [
         name: "橘猫2",
         val: "jm2",
         host: "host_jm2.txt",
-        origin:"api.lanniaoo.com"
+        origin:"api.bleueagle.com"
     }, {
         name: "三键连",
         val: "sjl",
@@ -133,7 +133,7 @@ const APPTYPENAME = [
         name: "行云",
         val: "xy",
         host: "host_xy.txt",
-        origin:"api.xingyunnb.com"
+        origin:"xyapi.bleueagle.com:8700"
     }, {
         name: "超飞",
         val: "cf",

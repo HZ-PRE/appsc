@@ -1,5 +1,6 @@
 window.server_node = {
 	data: {
+		win:null,
 		nodeList:[],
 		nodeComt:{
 			out_ip:'',
@@ -66,15 +67,16 @@ window.server_node = {
 					'<span class="action-dropdown">' +
 						'<button class="dropdown-toggle" onclick="server_node.methods.toggleDropdown(this)">操作 <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>' +
 						'<div class="dropdown-menu">' +
-  							'<div><button data-click="editNode(' + idx + ')">修改</button><button data-click="showDetail(' + idx + ')">详情</button></div>' +
-							'<div><button data-click="subNodeOP(' + idx + ',7)">IP信息</button><button data-click="subNodeOP(' + idx + ',11)">CPU信息</button></div>' +
+							'<div><button data-click="editNode(' + idx + ')">修改</button><button data-click="showDetail(' + idx + ')">详情</button></div>' +
+							'<div><button data-click="showIpinfo(0,'+"'IP信息'"+',' + idx + ')">IP信息</button><button data-click="subNodeOP(' + idx + ',7)">服务IP</button></div>' +
 							'<div><button data-click="subNodeOP(' + idx + ',12)">负载情况</button><button data-click="subNodeOP(' + idx + ',13)">内存情况</button></div>' +
-							'<button data-click="subNodeOP(' + idx + ',14)">硬盘情况</button>' +
+							'<div><button data-click="subNodeOP(' + idx + ',14)">硬盘情况</button><button data-click="subNodeOP(' + idx + ',11)">CPU信息</button></div>' +
 							'<div><button data-click="subNodeOP(' + idx + ',4)">配置gost</button><button data-click="subNodeOP(' + idx + ',9)">gost情况</button></div>' +
 							'<div><button data-click="subNodeOP(' + idx + ',1)">初始化Xrary</button><button data-click="subNodeOP(' + idx + ',5)">初始化Xrary的日志</button></div>' +
 							'<div><button data-click="subNodeOP(' + idx + ',3)">配置Xrary</button><button data-click="subNodeOP(' + idx + ',8)">Xrary状态</button></div>' +
 							'<div><button data-click="subNodeOP(' + idx + ',2)">部署监控</button><button data-click="subNodeOP(' + idx + ',6)">部署监控的日志</button></div>' +
 							'<button data-click="subNodeOP(' + idx + ',10)">监控情况</button>' +
+							'<div><button data-click="showIpinfo(1,'+"'是否为黑名单'"+',' + idx + ')">是否为黑名单</button><button data-click="showIpinfo(2,'+"'查风险分数'"+','+ idx + ')">查风险分数</button></div>' +
 						'</div>' +
 					'</span>';
 				ul.appendChild(li);
@@ -236,13 +238,54 @@ window.server_node = {
 			});
 			if (!wasOpen) dropdown.classList.add('open');
 		},
+		showIpinfo(t=0,tit,idx) {
+			var node = app.data.nodeList[idx];
+			if (!node) return;
+			app.data.trafficMonitorNode = node;
+			app.data.trafficMonitorNodeT = t;
+			let inIPs=node.in_ip.split(",")
+
+			if (inIPs.length>0) {
+				let selipo='';
+				for (var index = 0; index < inIPs.length; index++) {
+					console.log(inIPs[index])
+					selipo+=`<option value="${inIPs[index]}">${inIPs[index]}</option>`;
+				}
+				app.data.win=window.open(this._buildIpinfoUrl(inIPs[0]))
+				autolog.confirm(node.out_ip + ' (' + (node.city || '-') + ') '+tit+'监控',
+					`入口ip：<select id="modal-selip" class="filter-select" style="min-width: 88px" title="请选择入口IP">${selipo}</select>`,
+					function (e){
+						let selip = document.getElementById('modal-selip');
+						console.log(selip.value)
+						if (app.data.win) {
+							app.data.win.location.replace(this.server_node.methods._buildIpinfoUrl(selip.value));
+						}
+					},true,function (e){
+						app.data.win.close();
+						e.close();
+					},{successTit:'查询',failTit:'关闭'}
+				)
+			}else {
+				autolog.error("信息有误!")
+			}
+		},
+		_buildIpinfoUrl(ip) {
+			switch (app.data.trafficMonitorNodeT) {
+				case 0:
+					return `https://ipinfo.io/${ip}?lookup_source=search-bar`;
+				case 1:
+					return `https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a${ip}&run=toolpage#`;
+				case 2:
+					return `https://scamalytics.com/ip/${ip}`;
+			}
+		},
 		showMonitor(t,idx) {
 			var node = app.data.nodeList[idx];
 			if (!node) return;
 			app.data.trafficMonitorNode = node;
 			app.data.trafficMonitorNodeT = t;
 			var title = document.getElementById('trafficMonitorTitle');
-			var frame = document.getElementById('trafficMonitorFrame');
+			let frame = document.getElementById('trafficMonitorFrame');
 			if (title) {
 				let tit = t===0?'带宽':'流量';
 				title.textContent = node.out_ip + ' (' + (node.city || '-') + ') '+tit+'监控';
@@ -345,10 +388,10 @@ window.server_node = {
 			let node = app.data.newNode
 			for (const key in app.data.nodeComt) {
 			  if (key === 'id') continue;
-			
+
 			  const el = document.getElementById(`app-${key}`);
 			  if (!el) continue; // 防止报错
-			
+
 			  el.value = node[key] ?? ''; // 用 ?? 保留 0 / false
 			}
 			document.getElementById('editModal').classList.add('show');
