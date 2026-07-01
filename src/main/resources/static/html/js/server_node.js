@@ -246,14 +246,14 @@ window.server_node = {
 			let inIPs=node.in_ip.split(",")
 
 			if (inIPs.length>0) {
-				let selipo='';
+				let selipo=`<option value="${node.out_ip}">出口：${node.out_ip}</option>`;
 				for (var index = 0; index < inIPs.length; index++) {
 					console.log(inIPs[index])
-					selipo+=`<option value="${inIPs[index]}">${inIPs[index]}</option>`;
+					selipo+=`<option value="${inIPs[index]}">入口：${inIPs[index]}</option>`;
 				}
-				app.data.win=window.open(this._buildIpinfoUrl(inIPs[0]))
+				app.data.win=window.open(this._buildIpinfoUrl(node.out_ip))
 				autolog.confirm(node.out_ip + ' (' + (node.city || '-') + ') '+tit+'监控',
-					`入口ip：<select id="modal-selip" class="filter-select" style="min-width: 88px" title="请选择入口IP">${selipo}</select>`,
+					`入口ip：<select id="modal-selip" class="filter-select" style="min-width: 88px" title="请选择IP">${selipo}</select>`,
 					function (e){
 						let selip = document.getElementById('modal-selip');
 						console.log(selip.value)
