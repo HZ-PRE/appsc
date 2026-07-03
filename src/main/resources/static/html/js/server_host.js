@@ -22,7 +22,7 @@ window.server_host = {
 
 	created() {
 		const appType = document.getElementById("app-app");
-		app.data.apps = [...APPTYPENAME,...APPKFTYPE]
+		app.data.apps = [...APPTYPENAME,...APPKFTYPE,...APPOTHERTYPE]
 		for (var index = 0; index < app.data.apps.length; index++) {
 			appType.insertAdjacentHTML("beforeend",
 				`<option value="${app.data.apps[index]['val']}"  key="${index}">${app.data.apps[index]["name"]}</option>`

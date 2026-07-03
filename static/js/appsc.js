@@ -1,11 +1,4 @@
 var NODEAPI = 'http://10.10.25.202:8082/'
-// 本次更新的版本
-const appVersion = 281;
-
-// 本次更新说明
-const appVersionTxt = "域名和节点检测功能添加";
-
-const APPCONFSUM=10;
 
 const APPACCESSKETLIST= ['lxf','mxh','suzijie','yangzhongjie','liuyisen','gongpenglong','huangshuiping','yangjiaming','ly','jiajunhao','yangjing','yangzhicheng','hw'];
 const ADMINAPPACCESSKETLIST =['lxf','liuyisen']
@@ -45,7 +38,13 @@ const HOSTOSS = [
     "https://yingmao2.s3.ap-east-1.amazonaws.com/",
     "https://pub-eed78fedcfb6470ea94589a3771b4e0f.r2.dev/"
 ]
-
+const APPOTHERTYPE=[
+    {
+        name: "广州落地页",
+        val:'gz_loudi_page',
+        origin:"set.lead2win.cc"
+    }
+]
 const APPKFTYPE=[
     {
         name: "广州客服",
