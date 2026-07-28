@@ -27,6 +27,7 @@ const SUPPLIERMAP = {
     qiniu: '七牛云',
     jdcloud: '京东云',
     namesilo: 'namesilo',
+    bsncdn: '不死鸟CDN',
 };
 const FUHAO=['+',','];
 
@@ -43,6 +44,11 @@ const APPOTHERTYPE=[
         name: "广州落地页",
         val:'gz_loudi_page',
         origin:"set.lead2win.cc"
+    },
+    {
+        name: "湖北落地页",
+        val:'hb_loudi_page',
+        origin:"set1.lead2win.cc"
     }
 ]
 const APPKFTYPE=[
@@ -77,62 +83,62 @@ const APPTYPENAME = [
         name: "影猫",
         val: "ym",
         host: "host_ym.txt",
-        origin:"api.yingmaox.cc"
+        origin:"ym.lead3win.cc:8700" //api.yingmaox.cc
     }, {
         name: "太子",
         val: "tz",
         host: "hosttaizi.txt",
-        origin:"tz.tztoym.com:18002"
+        origin:"tz.otcopusapp.work:18008" //api.otcopusvpn.cc
     }, {
         name: "八爪鱼",
         val: "bzy",
         host: "hostdef.txt",
-        origin:"bzyapi.bazhuyuvpn.cc"
+        origin:"bzyapi.otcopusapp.work:18102" //bzyapi.bazhuyuvpn.cc
     }, {
         name: "云梯",
         val: "yt",
         host: "host_yunti.txt",
-        origin:"api1.ytsjpro.com"
+        origin:"yt.otcopusapp.work:18002" //api1.ytsjpro.com
     }, {
         name: "马上连",
         val: "msl",
         host: "host_wf.txt",
-        origin:"api.wfvpnpro.com"
+        origin:"wf.lead3win.cc:15208"  //api.wfvpnpro.com
     }, {
         name: "一键连",
         val: "yjl",
         host: "host_yjl.txt",
-        origin:"api.yijianlianjsq.com"
+        origin:"yjl.lead3win.cc:15108" //api.yijianlianjsq.com
     }, {
         name: "橘猫",
         val: "jm",
         host: "host_jm.txt",
-        origin:"api.jumaoniubi.com"
+        origin:"jmapi.lead3win.cc:15008"  //api.jumaoniubi.com
     }, {
         name: "二键连",
         val: "ejl",
         host: "host_yjlsecond.txt",
-        origin:"api2.yijianlianjsq.com"
+        origin:"yjl2.lead3win.cc:14108" //api2.yijianlianjsq.com
     }, {
         name: "橘猫2",
         val: "jm2",
         host: "host_jm2.txt",
-        origin:"api.bleueagle.com"
+        origin:"jmapi2.lead3win.cc:15520"  //api.bleueagle.com
     }, {
         name: "三键连",
         val: "sjl",
         host: "host_yjl3.txt",
-        origin:"api3.onetouchjsq.com"
+        origin:"yjl3.lead3win.cc:14131"  //api3.onetouchjsq.com
     }, {
         name: "网飞",
         val: "wf",
         host: "host_wf.txt",
-        origin:"api.wfvpnpro.com"
+        origin:"wf.lead3win.cc:15208"
     }, {
         name: "行云",
         val: "xy",
         host: "host_xy.txt",
-        origin:"xyapi.bleueagle.com:8700"
+        origin:"xingyun.lead3win.cc:15308" //xyapi.bleueagle.com
     }, {
         name: "超飞",
         val: "cf",
@@ -152,7 +158,7 @@ const APPTYPENAME = [
         name: "快飞",
         val: "bsm",
         host: "host_kuaifei.txt",
-        origin:"api.huiguovpn.win:18008"
+        origin:"huiguoapi.otcopusapp.work:18408" //api.huiguovpn.win
     }, {
         name: "极捷",
         val: "jj",
@@ -173,5 +179,10 @@ const APPTYPENAME = [
         val: "jkl",
         host: "host_jkl.txt",
         origin:""
+    },{
+        name: "回程",
+        val: "huicheng",
+        host: "host_huicheng.txt",
+        origin:"huicheng.lead3win.cc:18001" //huicheng.jijiejsq.com
     }
 ]
