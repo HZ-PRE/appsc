@@ -74,7 +74,7 @@ const APPKFTYPE=[
         name: "海外客服",
         val: 'hw_kf',
         host: "hw_kefu.txt",
-        origin:""
+        origin:"chat-cn.adtd.work:18080"
     }
 ]
 
@@ -150,10 +150,10 @@ const APPTYPENAME = [
         host: "host_hyl.txt",
         origin:"api.haoyilian.vip"
     },{
-        name: "影喵",
-        val: "ymm",
-        host: "host_xy.txt",
-        origin:""
+        name: "启航",
+        val: "qihang",
+        host: "host_qihang.txt",
+        origin:"qihang.otcopusapp.work:18302"
     }, {
         name: "快飞",
         val: "bsm",
