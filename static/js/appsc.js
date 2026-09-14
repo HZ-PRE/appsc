@@ -1,6 +1,6 @@
 var NODEAPI = 'http://10.10.25.202:8082/'
 
-const APPACCESSKETLIST= ['lxf','mxh','suzijie','yangzhongjie','liuyisen','gongpenglong','huangshuiping','yangjiaming','ly','jiajunhao','yangjing','yangzhicheng','hw'];
+const APPACCESSKETLIST= ['lxf','mxh','suzijie','yangzhongjie','liuyisen','gongpenglong','huangshuiping','yangjiaming','ly','jiajunhao','yangjing','yangzhicheng','sbw','hw'];
 const ADMINAPPACCESSKETLIST =['lxf','liuyisen']
 const COUNTRIESCN = [
     "香港","澳门","台湾","中国","美国","日本","韩国","朝鲜","俄罗斯",
@@ -160,10 +160,10 @@ const APPTYPENAME = [
         host: "host_kuaifei.txt",
         origin:"huiguoapi.otcopusapp.work:18408" //api.huiguovpn.win
     }, {
-        name: "极捷",
-        val: "jj",
-        host: "host_jijie.txt",
-        origin:""
+        name: "天上",
+        val: "tianshang",
+        host: "host_tianshang.txt",
+        origin:"tianshang.otcopusapp.work:18403"
     }, {
         name: "蓝鹰",
         val: "ly",
