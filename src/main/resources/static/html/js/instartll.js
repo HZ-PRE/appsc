@@ -101,9 +101,10 @@ window.instartll = {
 			fileName.textContent = textContent;
 			let appName = "";
 			let flag=false;
-			let qd=checkForLongNumbers(textContent,4);
-			if(qd && qd.length>0){
-				appName= qd[0];
+			let version=checkForLongNumbers(textContent,4);
+			if(version && version.length>0){
+				appName= version[0];
+				appName=appName + '_'+getFirstBetweenAmp(textContent);
 			}else{
 				flag=true;
 			}

@@ -181,7 +181,10 @@ function checkForLongNumbers(str,i=4) {
 	const pattern = new RegExp(`\\d{${i},}`, 'g'); // 匹配至少5位的数字串
 	return str.match(pattern);
 }
-
+function getFirstBetweenAmp(str) {
+	const m = str.match(/&([^&]*)&/);
+	return m ? m[1] : '';
+}
 //应用类型
 const APPTYPES=[
 	{
