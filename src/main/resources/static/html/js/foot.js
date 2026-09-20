@@ -607,6 +607,6 @@ async function postServerSupplierApi(call) {
 
 //-------其它方法
 //是否是纯数字
-function isPureNumber(str) {
-	return /^[0-9]+$/.test(str);
+function isNumberWithUnderscore(str) {
+	return /^\d+(=\d+)*$/.test(str);
 }
