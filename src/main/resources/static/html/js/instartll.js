@@ -102,9 +102,10 @@ window.instartll = {
 			let appName = "";
 			let flag=false;
 			let version=checkForLongNumbers(textContent,4);
+			let qd=getFirstBetweenEq(textContent);
 			if(version && version.length>0){
 				appName= version[0];
-				appName=appName + '_'+getFirstBetweenAmp(textContent);
+				qd = qd?'_'+qd:"";
 			}else{
 				flag=true;
 			}
@@ -113,10 +114,10 @@ window.instartll = {
 				document.getElementById("result").innerText = "❌ 安装包和压缩包名不能含有空格和（）与 (),且安装包必须含有渠道号";
 			}else if(appName && (textContent.endsWith("apk") || textContent.endsWith("exe"))){
 				let ns= textContent.split(".");
-				app.data.appName=`${appName}/appName.${ns[ns.length-1]}`;
+				app.data.appName=`${appName}/appName${qd}.${ns[ns.length-1]}`;
 			}else if("text" === appReleaseType && textContent){
 				let ns= textContent.split(".");
-				app.data.appName=`${appName}/appName.${ns[ns.length-1]}`;
+				app.data.appName=`${appName}/appName${qd}.${ns[ns.length-1]}`;
 			}
 		},
 		getUpdateAppConfig(t = '') {
