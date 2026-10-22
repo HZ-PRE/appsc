@@ -39,6 +39,13 @@ const HOSTOSS = [
     "https://yingmao2.s3.ap-east-1.amazonaws.com/",
     "https://pub-eed78fedcfb6470ea94589a3771b4e0f.r2.dev/"
 ]
+const OTHERAPPOTHERTYPE=[
+    {
+        name: "海外App Store账号",
+        val:'hw_app_store',
+        host: "hw_app_store.json"
+    }
+]
 const APPOTHERTYPE=[
     {
         name: "广州落地页",
@@ -172,8 +179,8 @@ const APPTYPENAME = [
     }, {
         name: "星域",
         val: "xinyu",
-        host: "host_xy.txt",
-        origin:""
+        host: "host_xinyu.txt",
+        origin:"cto-12986-cn-db-do-user-360.markoctopus.cc:18080"
     },{
         name: "即刻连",
         val: "jkl",

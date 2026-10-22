@@ -321,7 +321,10 @@ public class ClientController {
             String ret= "";
             Update update =new Update();
             update.setAppfile(new SimpleMultipartFile(content.getBytes(),fileName,fileType));
-            update.setFilename(fileName);
+            String dir="";
+            if(m.containsKey("dir")){
+                dir=m.get("dir");
+            }
             Map<String,Map<String, String>> ms=clientService.getConfigByOss();
             for (Map.Entry<String, Map<String, String>> entry : ms.entrySet()) {
                 Map<String, String> map = entry.getValue();
@@ -330,6 +333,8 @@ public class ClientController {
                 update.setAccessKeyId(map.get("AccessKeyId"));
                 update.setAccessKeySecret(map.get("AccessKeySecret"));
                 update.setPrivateKeyPath(map.get("PrivateKeyPath"));
+                update.setFilename(fileName);
+                update.setRemoteDir(dir);
                 if(entry.getKey().contains("dashOss")){
                     if(url.contains(update.getPrivateKeyPath())){
                         url = url.replaceAll(update.getPrivateKeyPath(),"");

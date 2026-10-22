@@ -216,6 +216,9 @@ const APPTYPES=[
 			},{
 				"tit":"客服修改",
 				"a":"kf_url"
+			},{
+				"tit":"其它参数",
+				"a":"other_param"
 			}
 		]
 	},
